@@ -944,6 +944,17 @@ body{padding-bottom:calc(74px + env(safe-area-inset-bottom))}
 .allset svg{width:34px;height:34px;flex:none;color:var(--mint)}
 .recomm{display:inline-block;font:900 11.5px Nunito,sans-serif;letter-spacing:.06em;text-transform:uppercase;background:var(--coral);color:#fff;border-radius:99px;padding:3px 10px;margin-bottom:8px}
 [data-skin=star] .recomm{color:#141a3d}
+.stop{display:flex;gap:14px;align-items:center;background:#fff1ee;border:3px solid #e5483b;border-radius:20px;padding:14px;margin:0 0 16px;animation:stopin .6s var(--spring)}
+@keyframes stopin{0%{transform:scale(.85);opacity:0}}
+.stopsign{flex:none;width:74px;height:74px;display:grid;place-items:center;background:#e5483b;color:#fff;font:700 18px Fredoka,sans-serif;letter-spacing:.04em;clip-path:polygon(29% 0,71% 0,100% 29%,100% 71%,71% 100%,29% 100%,0 71%,0 29%)}
+.stop b{display:block;font:700 18px Fredoka,sans-serif;color:#b8322a}
+.stop div span{display:block;font-weight:800;font-size:14px;line-height:1.35;color:#5a2a26;margin-top:2px}
+[data-skin=star] .stop{background:rgba(229,72,59,.14);border-color:#e86a5f}[data-skin=star] .stop b{color:#ffb3aa}[data-skin=star] .stop div span{color:#f4dcd8}
+[data-skin=refined] .stop{border-width:2px;border-radius:6px}[data-skin=refined] .stop b{font-family:"Cormorant Garamond",serif;font-size:21px}
+.stopdone{text-align:center;padding-top:30px}.stopdone svg{width:72px;height:72px;color:var(--mint)}
+.ncard{border-color:var(--blue)!important;background:linear-gradient(135deg,var(--blue2),var(--card) 70%)}
+.ncard .lbl svg{width:18px;height:18px;color:var(--blue)}
+[data-skin=star] .ncard{background:linear-gradient(135deg,rgba(243,201,105,.14),rgba(255,255,255,.04) 70%)}
 /* help */
 #vhelp .card details+details{margin-top:4px}
 #vhelp .card p,#vhelp .card li{font-weight:700;font-size:14.5px;line-height:1.45}
@@ -1187,7 +1198,7 @@ const FLAME=`<svg viewBox="0 0 24 24"><path d="M12 2c1 4 6 6 6 12a6 6 0 01-12 0c
 const K="nt30-v1", START="2026-12-01", DAY=864e5;
 let st={d:[],n:"",off:0};
 try{const r=localStorage.getItem(K);if(r)st=Object.assign(st,JSON.parse(r))}catch(e){}
-st.off=+st.off||0;st.p=st.p==="ess"?"ess":"full";st.t=st.t||{};st.notes=st.notes||{};if(st.snd==null)st.snd=false;DAYS=st.p==="ess"?ESS:FULL;
+st.off=+st.off||0;st.p=st.p==="ess"?"ess":"full";st.t=st.t||{};st.notes=st.notes||{};if(st.snd==null)st.snd=true;DAYS=st.p==="ess"?ESS:FULL;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
@@ -1815,9 +1826,14 @@ function renderDash(){
   ${amAdmin()?`<button class="tile admin" data-go="admin"><span class="ti">${ICON.star}</span><b>Admin</b><small>App stats</small></button>`:""}
   <button class="tile" data-go="settings"><span class="ti">${ICON.gear}</span><b>Settings</b><small>Theme, reminders, privacy</small></button>
   <button class="tile" data-go="help"><span class="ti">${ICON.help}</span><b>Help</b><small>How it all works</small></button></div>`;
- D.innerHTML=`<div class="card dc today">${today}</div>${me}${fam}${feed}${tiles}`;
+ const canP=pushOK()&&(!isIOS()||standalone()),askN=c&&c.user()&&!st.nt.on&&!st.ntNo;
+ const ncard=askN?`<div class="card dc ncard"><div class="lbl">${ICON.bell} Reminders are off</div><div class="ft">${canP?"Turn on a daily reminder so you don't miss a day.":"Add this app to your Home Screen and open it from there to turn on reminders."}</div>
+  <div class="acts" style="margin-top:10px">${canP?`<button class="mini go" id="dnon">Turn on reminders</button>`:`<button class="mini go" id="dnhow">Show me how</button>`}<button class="mini" id="dnno">Not now</button></div><p class="nmsg" id="dnm"></p></div>`:"";
+ D.innerHTML=`<div class="card dc today">${today}</div>${ncard}${me}${fam}${feed}${tiles}`;
  const on=(id,f)=>{const e=$(id);if(e)e.onclick=f};
  on("dgo",()=>{if(n>=30)setView("recap");else openSheet(df<0?0:df>=30?next:ci)});
+ on("dnon",async()=>{const m=await enablePush().catch(()=>"Couldn't turn on reminders right now.");if(m)$("dnm").textContent=m;else{renderDash();say("Reminders are on! I'll nudge you if you haven't read yet.")}});
+ on("dnhow",()=>setView("help"));on("dnno",()=>{st.ntNo=true;save();renderDash()});
  on("dcu",()=>setView("path"));on("dahead",()=>openSheet(next));on("dthought",()=>openThought(ci));on("dfam",()=>setView("fam"));on("dfeed",()=>setView("feed"));on("dsign",()=>openAccount());
  D.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{const g=b.dataset.go;g==="settings"?(renderAcct(),openSettings()):setView(g)});
  D.querySelectorAll(".hb").forEach(b=>b.onclick=()=>heartTap(b));
@@ -2067,7 +2083,7 @@ function letterSeen(){try{return localStorage.getItem(LS)==="1"}catch(e){return 
 function startOnboarding(only){
  const o=$("onb");o.hidden=false;document.body.style.overflow="hidden";
  let scr=only==="letter"?"letter":"letter",mode=null,step=0,back=false;
- const JOIN=["theme","path","acct","home","notif","how"];
+ const JOIN=["theme","path","home","acct","notif","how"];
  const draw=()=>{
   const inJoin=mode==="join";
   o.innerHTML=`<div class="onb-in"><div class="onb-top"><button class="onb-back" id="oback" ${scr==="letter"?'style="visibility:hidden"':""}>Back</button><div class="onb-dots">${inJoin?JOIN.map((_,i)=>`<i class="${i<=step?"on":""}"></i>`).join(""):""}</div></div><div class="onb-body${back?" back":""}" id="obody"></div><div class="onb-foot" id="ofoot"></div></div>`;
@@ -2086,7 +2102,7 @@ function startOnboarding(only){
   if(scr==="signin"){
    if(!cloud()&&window.NT_FB&&!draw._w){B.innerHTML=`<h1 id="onbT">Connecting…</h1><p class="lead">Getting things ready.</p>`;let t=0;const iv=setInterval(()=>{t+=300;if(cloud()||t>8000){clearInterval(iv);draw._w=true;draw()}},300);return}
    if(!cloud()){B.innerHTML=`<h1 id="onbT">Can't connect</h1><p class="lead">Check your internet, then try again. You can also start without signing in and sign in later in Settings.</p>`;F.innerHTML=`<button class="btn" id="onext">Start without signing in</button>`;$("onext").onclick=()=>{mode="join";scr="join";step=0;draw()};return}
-   acctForm("in",B,()=>{finish()});
+   acctForm("in",B,()=>{if(!st.nt.on&&pushOK()&&(!isIOS()||standalone())){mode="join";step=JOIN.indexOf("notif");scr="join";draw._ret=true;draw()}else finish()});
    const sw=$("oswap");if(sw)sw.onclick=()=>{mode="join";scr="join";step=0;draw()};return}
   const k=JOIN[step];
   if(k==="theme"){
@@ -2108,17 +2124,23 @@ function startOnboarding(only){
    F.innerHTML="";acctForm("new",B,()=>{step++;draw()});
    const sw=$("oswap");if(sw)sw.onclick=()=>{scr="signin";mode=null;draw()};
   }else if(k==="home"){
-   B.innerHTML=`<span class="recomm">Highly recommended</span><h1 id="onbT">Add this app to your Home Screen</h1><p class="lead">It opens like a real app, keeps your progress safe, and lets you get reminders.</p>${hsGuide()}`;
-   wireHs(B);nx(standalone()?"Next":"I'll do this now");
+   if(standalone()){step++;draw();return}
+   if(draw._added){B.innerHTML=`<div class="stopdone">${ICON.check}<h1 id="onbT">Great! Now open it from your Home Screen</h1><p class="lead">Close this page, find the <b>NT in 30</b> icon on your Home Screen, and open it. You'll finish setting up there.</p></div>`;
+    F.innerHTML=`<button class="olink" id="ohere" style="display:block;margin:0 auto">Continue here in the browser instead</button>`;$("ohere").onclick=()=>{draw._added=false;step++;draw()};return}
+   B.innerHTML=`<div class="stop"><span class="stopsign">STOP</span><div><b>Before you create an account</b><span>I highly recommend you add this app to your Home Screen first. It works like a real app, keeps you signed in, and lets you get reminders.</span></div></div>${hsGuide()}`;
+   wireHs(B);
+   F.innerHTML=`<button class="btn" id="oadded">I added it to my Home Screen</button><button class="olink" id="oskip" style="display:block;margin:6px auto 0">Skip for now</button>`;
+   $("oadded").onclick=()=>{draw._added=true;draw()};$("oskip").onclick=()=>{step++;draw()};
   }else if(k==="notif"){
    const can=pushOK()&&(!isIOS()||standalone());
-   B.innerHTML=`<h1 id="onbT">Daily reminders</h1><p class="lead">${can?"Get a gentle reminder if you haven't read yet, and see when others finish.":"Once the app is on your Home Screen, open it from there and turn on reminders in Settings."}</p>
+   B.innerHTML=`<span class="recomm">Highly recommended</span><h1 id="onbT">Turn on reminders</h1><p class="lead">${can?"People who turn on reminders are much more likely to finish. You'll only get one if you haven't read yet.":"Once the app is on your Home Screen, open it from there and turn on reminders. We'll remind you on the Home page too."}</p>
     <div class="walk"><div class="wk"><span class="ic">${ICON.bell}</span><div><b>A daily nudge</b><span>Only if you haven't read yet. You pick the time.</span></div></div>
     <div class="wk"><span class="ic">${ICON.fam}</span><div><b>Updates from everyone</b><span>See when someone finishes or shares a thought.</span></div></div></div>
     <p class="nmsg" id="onm"></p>`;
    if(can){F.innerHTML=`<button class="btn" id="onon">Turn on reminders</button><button class="olink" id="onskip" style="display:block;margin:6px auto 0">Not now</button>`;
-    $("onon").onclick=async()=>{$("onon").disabled=true;const m=await enablePush().catch(e=>"Couldn't turn on reminders right now.");if(m){$("onm").textContent=m;$("onon").disabled=false}else{step++;draw()}};
-    $("onskip").onclick=()=>{step++;draw()}}
+    const nxt=()=>{if(draw._ret){finish();return}step++;draw()};
+    $("onon").onclick=async()=>{$("onon").disabled=true;const m=await enablePush().catch(e=>"Couldn't turn on reminders right now.");if(m){$("onm").textContent=m;$("onon").disabled=false}else nxt()};
+    $("onskip").onclick=nxt}
    else nx();
   }else{
    B.innerHTML=`<h1 id="onbT">How it works</h1><p class="lead">Everyone starts together on Tuesday, December 1.</p>
