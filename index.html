@@ -828,6 +828,7 @@ body{padding-bottom:calc(74px + env(safe-area-inset-bottom))}
 .fi{display:flex;gap:11px;align-items:flex-start;background:var(--card);border:2px solid var(--line);border-radius:18px;padding:12px 12px 10px;margin-top:10px}
 .fi .av{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:#fff;font:700 16px Fredoka,sans-serif}
 [data-skin=star] .fi .av{color:#141a3d}
+.fi .av.anon{background:var(--grayd);color:var(--mute)}
 .fi .fbd{flex:1;min-width:0}
 .fi .hd{font-weight:800;font-size:14.5px;line-height:1.3}
 .fi .hd b{font-weight:900}
@@ -1045,7 +1046,7 @@ body{padding-bottom:calc(74px + env(safe-area-inset-bottom))}
   <section class="card"><details><summary>Nothing is locked</summary><p>You can open any day, read ahead, or go back anytime. If you fall behind, the Reading tracker offers two ways to catch up: doubling up for a few days, or shifting your schedule.</p></details></section>
   <section class="card"><details><summary>Full or Essentials</summary><p><b>Full</b> covers all 260 chapters, about 9 a day. <b>Essentials</b> covers 89 key chapters, about 3 a day, and still tells the whole story. Switch anytime in Settings. Days you've checked off stay checked.</p></details></section>
   <section class="card"><details><summary>Family and feed</summary><p>The Family page shows everyone in the challenge, how far along they are, and who read today. The feed shows when someone finishes a reading and any thoughts they share. Tap the heart to cheer someone on.</p></details></section>
-  <section class="card"><details><summary>Privacy</summary><p>Turn off <span class="k">Share my progress</span> in Settings to hide yourself from the Family page and stop posting when you finish. Thoughts only post when you choose to share them, and you can edit or delete them anytime.</p></details></section>
+  <section class="card"><details><summary>Privacy</summary><p>Turn off <span class="k">Share my progress</span> in Settings to hide yourself from the Family page and stop posting when you finish. Turn on <span class="k">Post anonymously</span> to show "Anonymous" instead of your name in the feed, or check the box on any single thought. Thoughts only post when you choose to share them, and you can edit or delete them anytime.</p></details></section>
   <section class="card"><details><summary>Notifications</summary><p>On iPhone, add the app to your Home Screen and open it from there first. Then go to Settings and tap <span class="k">Turn on notifications</span>. You can choose a reminder time, or turn them off anytime.</p></details></section>
   <section class="card"><details><summary>Switching phones</summary><p>Sign in with your name and 6-digit PIN on the new phone. Your progress comes with you.</p></details></section>
   <section class="card"><details><summary>Questions or feedback?</summary><p>Text Shantz! He built this app and would love to hear what could be better.</p></details></section>
@@ -1601,9 +1602,9 @@ function setSkin(k){skin=k;try{localStorage.setItem(SK,k)}catch(e){}document.doc
 
 /* ===== cloud bridge (Firebase module sets window.NTCloud) ===== */
 const cloud=()=>window.NTCloud&&window.NTCloud.ready?window.NTCloud:null;
-window.NT={get:()=>({d:st.d.slice(),n:st.n,off:st.off,plan:st.plan||null,skin,p:st.p,t:st.t||{},share:st.share!==false,notes:st.notes||{},nt:st.nt,snd:!!st.snd}),
+window.NT={get:()=>({d:st.d.slice(),n:st.n,off:st.off,plan:st.plan||null,skin,p:st.p,t:st.t||{},share:st.share!==false,anon:!!st.anon,notes:st.notes||{},nt:st.nt,snd:!!st.snd}),
  apply:(c)=>{if(!c)return;const u=new Set([...(st.d||[]),...(c.d||[])].filter(x=>Number.isInteger(x)&&x>=0&&x<30));st.d=[...u];
-  if(c.name&&!st.n)st.n=c.name;if(Number.isInteger(c.off)&&!st.off)st.off=c.off;if(c.plan&&!st.plan)st.plan=c.plan;if(c.t)st.t=Object.assign({},c.t,st.t||{});if(c.p&&(!st.d.length||(c.d||[]).length>=st.d.length)){st.p=c.p==="ess"?"ess":"full";DAYS=st.p==="ess"?ESS:FULL}if(c.share===false)st.share=false;if(c._priv){st.notes=Object.assign({},c._priv.notes||{},st.notes||{});if(c._priv.nt)st.nt=Object.assign(st.nt||{},c._priv.nt);if(c._priv.snd!=null&&st.snd==null)st.snd=c._priv.snd}setStart();
+  if(c.name&&!st.n)st.n=c.name;if(Number.isInteger(c.off)&&!st.off)st.off=c.off;if(c.plan&&!st.plan)st.plan=c.plan;if(c.t)st.t=Object.assign({},c.t,st.t||{});if(c.p&&(!st.d.length||(c.d||[]).length>=st.d.length)){st.p=c.p==="ess"?"ess":"full";DAYS=st.p==="ess"?ESS:FULL}if(c.share===false)st.share=false;if(c._priv){if(c._priv.anon!=null)st.anon=!!c._priv.anon;st.notes=Object.assign({},c._priv.notes||{},st.notes||{});if(c._priv.nt)st.nt=Object.assign(st.nt||{},c._priv.nt);if(c._priv.snd!=null&&st.snd==null)st.snd=c._priv.snd}setStart();
   try{localStorage.setItem(K,JSON.stringify(st))}catch(e){}
   if(c.skin&&["playful","basic","refined","star"].includes(c.skin)&&c.skin!==skin){skin=c.skin;try{localStorage.setItem(SK,skin)}catch(e){}document.documentElement.dataset.skin=skin}
   $("nm").value=st.n;render();if(view==="fam")renderFam();if(view==="home")renderDash()},
@@ -1794,12 +1795,13 @@ function renderDash(){
 function ago(ts){if(!ts)return "just now";const d=ts.toDate?ts.toDate():new Date(ts),s=(Date.now()-d)/1000;if(s<60)return "just now";if(s<3600)return `${Math.floor(s/60)}m ago`;if(s<86400)return `${Math.floor(s/3600)}h ago`;if(s<172800)return "yesterday";return d.toLocaleDateString(undefined,{month:"short",day:"numeric"})}
 function dayTitle(p,i){const a=p==="ess"?ESS:FULL;return a[i]?a[i].t:""}
 function feedItem(e){
- const c=cloud(),me=c&&c.user()?c.user().uid:"",hs=e.hearts||[],on=hs.includes(me),nm=String(e.name||"Someone");
+ const c=cloud(),me=c&&c.user()?c.user().uid:"",hs=e.hearts||[],on=hs.includes(me),nm=e.anon?(e.uid===me?"Anonymous (you)":"Anonymous"):String(e.name||"Someone");
  const hb=`<button class="hb${on?" on":""}" data-id="${e.id}" aria-label="Heart">${on?ICON.heart:ICON.heartO}<span>${hs.length||""}</span></button>`;
- if(e.type==="thought")return `<div class="fi fth" data-id="${e.id}">${avatar(nm)}<div class="fbd"><div class="hd"><b>${esc(nm)}</b><small>${Number.isInteger(e.day)?`Day ${e.day+1} · ${esc(dayTitle(e.p,e.day))} · `:""}${ago(e.at)}${e.edited?" · edited":""}</small></div><div class="tx">${esc(e.text||"")}</div>
+ const av=e.anon?`<span class="av anon">?</span>`:avatar(nm);
+ if(e.type==="thought")return `<div class="fi fth" data-id="${e.id}">${av}<div class="fbd"><div class="hd"><b>${esc(nm)}</b><small>${Number.isInteger(e.day)?`Day ${e.day+1} · ${esc(dayTitle(e.p,e.day))} · `:""}${ago(e.at)}${e.edited?" · edited":""}</small></div><div class="tx">${esc(e.text||"")}</div>
   <div class="ac">${hb}${e.uid===me||(c&&c.isAdmin())?`<button class="more" data-own="${e.id}">${e.uid===me?"Edit":"Remove"}</button>`:""}</div></div></div>`;
  const what=e.type==="finish"?`finished the whole challenge! 🎉`:`finished Day ${e.day+1}`;
- return `<div class="fi dn" data-id="${e.id}">${avatar(nm)}<div class="fbd"><div class="hd"><b>${esc(firstName(nm))}</b> ${what}<small>${e.type==="finish"?"":esc(dayTitle(e.p,e.day))+" · "}${ago(e.at)}</small></div></div>${hb}</div>`;
+ return `<div class="fi dn" data-id="${e.id}">${av}<div class="fbd"><div class="hd"><b>${esc(e.anon?nm:firstName(nm))}</b> ${what}<small>${e.type==="finish"?"":esc(dayTitle(e.p,e.day))+" · "}${ago(e.at)}</small></div></div>${hb}</div>`;
 }
 let feedSeenAt=0;try{feedSeenAt=+localStorage.getItem("nt30-feedseen")||0}catch(e){}
 function markFeedSeen(){feedSeenAt=Date.now();try{localStorage.setItem("nt30-feedseen",String(feedSeenAt))}catch(e){}feedDot()}
@@ -1828,12 +1830,13 @@ function openThought(i,edit){
  s.innerHTML=`<div class="grab"></div><div class="meta"><span>Day ${i+1} · ${esc(DAYS[i]?DAYS[i].t:"")}</span></div><h2 id="shT">${edit?"Edit your thought":"Write down some thoughts"}</h2>
   <p class="note">What stood out to you? A verse, a feeling, a question. ${edit?"":"It will show in the family feed."}</p>
   <textarea class="tht" id="tht" maxlength="1000" placeholder="Today I noticed…">${esc(old)}</textarea><span class="cnt" id="thc">${old.length}/1000</span>
+  ${edit?"":`<label class="chk"><input type="checkbox" id="thanon"${st.anon?" checked":""}> Post anonymously</label>`}
   <div class="omsg" id="thm" style="margin-top:10px"></div>
   <button class="btn" id="thgo">${edit?"Save":"Share with the family"}</button>
   ${edit?`<button class="btn ghost" id="thdel" style="margin-top:10px">Delete this post</button>`:`<button class="btn ghost" id="thno" style="margin-top:10px">Not now</button>`}`;
  const ta=$("tht");ta.oninput=()=>$("thc").textContent=ta.value.length+"/1000";
  $("thgo").onclick=async()=>{const t=ta.value.trim();if(!t){$("thm").textContent="Write something first.";return}$("thgo").disabled=true;
-  try{edit?await c.editPost(edit.id,t):await c.postThought(i,t);st.notes=st.notes||{};st.notes[i]=t;save();closeSheet();if(view!=="feed")setView("feed");say(edit?"Saved!":"Thanks for sharing that.")}
+  try{edit?await c.editPost(edit.id,t):await c.postThought(i,t,$("thanon").checked);st.notes=st.notes||{};st.notes[i]=t;save();closeSheet();if(view!=="feed")setView("feed");say(edit?"Saved!":"Thanks for sharing that.")}
   catch(e){$("thm").textContent="Couldn't post right now. Check your internet and try again.";$("thgo").disabled=false}};
  if(edit)$("thdel").onclick=async()=>{if(!confirm("Delete this post?"))return;try{await c.deletePost(edit.id)}catch(e){}closeSheet()};else $("thno").onclick=closeSheet;
  $("scrim").classList.add("show");s.classList.add("show");setTimeout(()=>ta.focus(),350);
@@ -1880,7 +1883,7 @@ function renderPrefs(){
  const canPush=pushOK()&&(!isIOS()||standalone());
  P.innerHTML=`<p class="sec" style="margin-top:0">Reading path</p><div class="seg"><button data-p="full" aria-pressed="${st.p!=="ess"}"><b>Full</b><small>All 260 chapters, about 9 a day</small></button><button data-p="ess" aria-pressed="${st.p==="ess"}"><b>Essentials</b><small>89 key chapters, about 3 a day</small></button></div>
   <p class="nmsg">Switching keeps the days you've already checked off.</p>
-  <p class="sec">Privacy</p>${tgl("tshare",st.share!==false,"Share my progress","Show me on the Family page and post when I finish a reading")}
+  <p class="sec">Privacy</p>${tgl("tshare",st.share!==false,"Share my progress","Show me on the Family page and post when I finish a reading")}${tgl("tanon",!!st.anon,"Post anonymously","Show \"Anonymous\" instead of your name in the feed, including past posts")}
   <p class="sec">Notifications</p>
   ${st.nt.on?tgl("tremind",st.nt.remind,"Daily reminder","If you haven't read yet")+(st.nt.remind?`<div class="tg"><div><b>Reminder time</b><small>Your local time</small></div><select id="ttime">${times}</select></div>`:"")+tgl("tothers",st.nt.others,"When family finishes","When someone finishes a reading or shares a thought")+`<button class="link" id="toff" style="padding:8px 0 0">Turn off all notifications</button>`
    :`<p class="note" style="margin-top:4px">${canPush?"Get a daily reminder and see when the family reads.":isIOS()?"Add this app to your Home Screen, open it from there, then turn on notifications here.":"Get a daily reminder and see when the family reads."}</p><button class="btn ghost" id="ton" style="margin-top:10px"${canPush||!isIOS()?"":" disabled"}>${ICON.bell.replace("<svg",'<svg style="width:20px;height:20px;vertical-align:-4px;margin-right:6px"')}Turn on notifications</button>`}
@@ -1888,7 +1891,7 @@ function renderPrefs(){
   <p class="sec">Sounds</p>${tgl("tsnd",st.snd,"Sound effects","Little chimes when you finish a reading")}`;
  P.querySelectorAll(".seg button").forEach(b=>b.onclick=()=>{setPath(b.dataset.p);renderPrefs();syncPush()});
  const sw=(id,f)=>{const e=$(id);if(e)e.onclick=()=>{const v=e.getAttribute("aria-checked")!=="true";e.setAttribute("aria-checked",v);f(v)}};
- sw("tshare",v=>{st.share=v;save()});sw("tsnd",v=>{st.snd=v;save();if(v)sfx("tap")});
+ sw("tshare",v=>{st.share=v;save()});sw("tanon",v=>{st.anon=v;save();const c=cloud();if(c&&c.user())c.setAnon(v).then(()=>{$("tmsg").textContent=v?"Your posts now show as Anonymous.":"Your name is back on your posts."})});sw("tsnd",v=>{st.snd=v;save();if(v)sfx("tap")});
  sw("tremind",v=>{st.nt.remind=v;save();syncPush();renderPrefs()});sw("tothers",v=>{st.nt.others=v;save();syncPush()});
  const tt=$("ttime");if(tt)tt.onchange=()=>{st.nt.time=tt.value;save();syncPush()};
  const on=$("ton");if(on)on.onclick=async()=>{on.disabled=true;const m=await enablePush().catch(e=>"Couldn't turn on notifications. "+(e&&e.message||""));$("tmsg").textContent=m;on.disabled=false;if(!m)renderPrefs()};
@@ -2098,7 +2101,7 @@ const email=n=>`${slug(n)||"x"}@nt30.family`;
 let cur=null,members=[],feed=[],unsub=[],timer=null,admin=false,vapid=null;
 const push=async()=>{if(!cur)return;const g=window.NT.get();try{
  await F.setDoc(F.doc(db,"members",cur.uid),{name:(g.n||cur.name||"").slice(0,40),d:g.d,off:g.off||0,plan:g.plan||null,skin:g.skin,p:g.p||"full",t:g.t||{},share:g.share!==false,updated:F.serverTimestamp()},{merge:true});
- await F.setDoc(F.doc(db,"members",cur.uid,"private","me"),{notes:g.notes||{},nt:g.nt||{},snd:!!g.snd},{merge:true});
+ await F.setDoc(F.doc(db,"members",cur.uid,"private","me"),{notes:g.notes||{},nt:g.nt||{},snd:!!g.snd,anon:!!g.anon},{merge:true});
 }catch(e){console.warn("[nt30] save failed",e)}};
 window.addEventListener("nt30:save",()=>{clearTimeout(timer);timer=setTimeout(push,800)});
 const stop=()=>{unsub.forEach(f=>{try{f()}catch(e){}});unsub=[]};
@@ -2116,6 +2119,7 @@ A.onAuthStateChanged(auth,async u=>{
  window.NT.changed();
 });
 const ev=(id,data)=>F.setDoc(F.doc(db,"feed",id),data);
+const who=(g,anon)=>anon?{name:"Anonymous",anon:true}:{name:(g.n||cur.name||"").slice(0,40),anon:false};
 window.NTCloud={ready:true,user:()=>cur,list:()=>{const me=cur&&cur.uid;const g=window.NT.get();const mine={id:me,name:g.n||cur&&cur.name,d:g.d,off:g.off,t:g.t,p:g.p,share:g.share!==false};return [...members.filter(m=>m.id!==me),...(cur?[mine]:[])]},
  feed:()=>feed,isAdmin:()=>admin,
  signUp:async(name,pin)=>{const c=await A.createUserWithEmailAndPassword(auth,email(name),pin);await A.updateProfile(c.user,{displayName:name});cur={uid:c.user.uid,name};await push();return c},
@@ -2124,12 +2128,13 @@ window.NTCloud={ready:true,user:()=>cur,list:()=>{const me=cur&&cur.uid;const g=
  deleteAccount:async()=>{const u=auth.currentUser;if(!u)return;try{await F.deleteDoc(F.doc(db,"members",u.uid,"private","me"))}catch(e){}try{await F.deleteDoc(F.doc(db,"push",u.uid))}catch(e){}try{await F.deleteDoc(F.doc(db,"members",u.uid))}catch(e){console.warn("[nt30] delete doc failed",e)}await u.delete();cur=null},
  refresh:()=>window.NT.members(),
  postDone:async(i,p,title,all)=>{if(!cur)return;const g=window.NT.get();if(g.share===false)return;
-  try{await ev(`${cur.uid}_${p}_${i}`,{uid:cur.uid,name:(g.n||cur.name||"").slice(0,40),type:"done",day:i,p,at:F.serverTimestamp(),hearts:[]})}catch(e){}
-  if(all){try{await ev(`${cur.uid}_${p}_finish`,{uid:cur.uid,name:(g.n||cur.name||"").slice(0,40),type:"finish",p,at:F.serverTimestamp(),hearts:[]})}catch(e){}}},
+  try{await ev(`${cur.uid}_${p}_${i}`,{uid:cur.uid,...who(g,g.anon),type:"done",day:i,p,at:F.serverTimestamp(),hearts:[]})}catch(e){}
+  if(all){try{await ev(`${cur.uid}_${p}_finish`,{uid:cur.uid,...who(g,g.anon),type:"finish",p,at:F.serverTimestamp(),hearts:[]})}catch(e){}}},
  undoDone:async(i,p)=>{if(!cur)return;try{await F.deleteDoc(F.doc(db,"feed",`${cur.uid}_${p}_${i}`))}catch(e){}try{await F.deleteDoc(F.doc(db,"feed",`${cur.uid}_${p}_finish`))}catch(e){}},
- postThought:async(i,text)=>{const g=window.NT.get();await F.addDoc(F.collection(db,"feed"),{uid:cur.uid,name:(g.n||cur.name||"").slice(0,40),type:"thought",day:i,p:g.p||"full",text:text.slice(0,1000),at:F.serverTimestamp(),hearts:[]})},
+ postThought:async(i,text,anon)=>{const g=window.NT.get();await F.addDoc(F.collection(db,"feed"),{uid:cur.uid,...who(g,anon),type:"thought",day:i,p:g.p||"full",text:text.slice(0,1000),at:F.serverTimestamp(),hearts:[]})},
  editPost:(id,text)=>F.updateDoc(F.doc(db,"feed",id),{text:text.slice(0,1000),edited:true}),
  deletePost:id=>F.deleteDoc(F.doc(db,"feed",id)),
+ setAnon:async anon=>{if(!cur)return;const g=window.NT.get(),w=who(g,anon);const qs=await F.getDocs(F.query(F.collection(db,"feed"),F.where("uid","==",cur.uid)));await Promise.all(qs.docs.map(d=>F.updateDoc(d.ref,w).catch(e=>console.warn("[nt30] anon",e))))},
  heart:(id,on)=>F.updateDoc(F.doc(db,"feed",id),{hearts:on?F.arrayUnion(cur.uid):F.arrayRemove(cur.uid)}),
  vapidKey:async()=>{if(vapid)return vapid;try{const s=await F.getDoc(F.doc(db,"meta","public"));vapid=s.exists()?s.data().vapid:null}catch(e){}return vapid},
  savePush:data=>cur?F.setDoc(F.doc(db,"push",cur.uid),{...data,updated:F.serverTimestamp()},{merge:true}):null};
