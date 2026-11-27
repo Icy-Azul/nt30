@@ -2080,7 +2080,7 @@ document.documentElement.classList.toggle("duo",duoOn());
 ["gesturestart","gesturechange"].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
 document.addEventListener("touchmove",e=>{if(e.touches&&e.touches.length>1)e.preventDefault()},{passive:false});
 /* ---------- stay up to date ---------- */
-const BUILD="1795816782";
+const BUILD="1795817202";
 async function checkUpdate(){if(location.protocol!=="https:"||BUILD.startsWith("__"))return;try{const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"});if(!r.ok)return;const v=(await r.json()).v;
  if(v&&v!==BUILD){let tried="";try{tried=sessionStorage.getItem("nt30-upd")||""}catch(e){}if(tried===v)return;try{sessionStorage.setItem("nt30-upd",v)}catch(e){}save();setTimeout(()=>location.reload(),400)}}catch(e){}}
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")checkUpdate()});setTimeout(checkUpdate,1500);
@@ -2208,25 +2208,25 @@ function obDone(){try{return localStorage.getItem(OB)==="1"}catch(e){return true
 function letterSeen(){try{return localStorage.getItem(LS)==="1"}catch(e){return true}}
 function startOnboarding(only){
  const o=$("onb");o.hidden=false;document.body.style.overflow="hidden";
- let scr=only==="letter"||standalone()?"letter":"hs",mode=null,step=0,back=false;
+ let scr="letter",mode=null,step=0,back=false;
  const JOIN=["theme","path","acct","notif","how"];
  const draw=()=>{
   const inJoin=mode==="join";
-  o.innerHTML=`<div class="onb-in"><div class="onb-top"><button class="onb-back" id="oback" ${scr==="hs"||(scr==="letter"&&!draw._fromHs)?'style="visibility:hidden"':""}>Back</button><div class="onb-dots">${inJoin?JOIN.map((_,i)=>`<i class="${i<=step?"on":""}"></i>`).join(""):""}</div></div><div class="onb-body${back?" back":""}" id="obody"></div><div class="onb-foot" id="ofoot"></div></div>`;
+  o.innerHTML=`<div class="onb-in"><div class="onb-top"><button class="onb-back" id="oback" ${scr==="letter"?'style="visibility:hidden"':""}>Back</button><div class="onb-dots">${inJoin?JOIN.map((_,i)=>`<i class="${i<=step?"on":""}"></i>`).join(""):""}</div></div><div class="onb-body${back?" back":""}" id="obody"></div><div class="onb-foot" id="ofoot"></div></div>`;
   back=false;
-  $("oback").onclick=()=>{back=true;if(scr==="letter")scr="hs";else if(scr==="choice")scr="letter";else if(scr==="signin")scr="choice";else if(inJoin){if(step===0){mode=null;scr="choice"}else step--}draw()};
+  $("oback").onclick=()=>{back=true;if(scr==="hs")scr="letter";else if(scr==="choice")scr=draw._viaHs?"hs":"letter";else if(scr==="signin")scr="choice";else if(inJoin){if(step===0){mode=null;scr="choice"}else step--}draw()};
   const B=$("obody"),F=$("ofoot"),nx=(label="Next")=>{F.innerHTML=`<button class="btn" id="onext">${label}</button>`;$("onext").onclick=()=>{step++;step>=JOIN.length?finish():draw()}};
   if(scr==="hs"){
    if(draw._added){B.innerHTML=`<div class="stopdone">${ICON.check}<h1 id="onbT">Great! Now open it from your Home Screen</h1><p class="lead">Close this page, find the <b>NT in 30</b> icon on your Home Screen, and open it. You'll set everything up there.</p></div>`;
-    F.innerHTML=`<button class="olink" id="ohere" style="display:block;margin:0 auto">Continue here in the browser instead</button>`;$("ohere").onclick=()=>{draw._added=false;draw._fromHs=true;scr="letter";draw()};return}
+    F.innerHTML=`<button class="olink" id="ohere" style="display:block;margin:0 auto">Continue here in the browser instead</button>`;$("ohere").onclick=()=>{draw._added=false;draw._viaHs=true;scr="choice";draw()};return}
    B.innerHTML=`<div class="stop"><span class="stopsign">STOP</span><div><b>Add this app to your Home Screen first</b><span>Do this before anything else. It works like a real app, keeps you signed in, and lets you get reminders. You'll set everything up inside the Home Screen app, so you only do it once.</span></div></div>${hsGuide()}`;
    wireHs(B);
    F.innerHTML=`<button class="btn" id="oadded">I added it to my Home Screen</button><button class="olink" id="oskip" style="display:block;margin:6px auto 0">Continue in the browser</button>`;
-   $("oadded").onclick=()=>{draw._added=true;draw()};$("oskip").onclick=()=>{draw._fromHs=true;scr="letter";draw()};return}
+   $("oadded").onclick=()=>{draw._added=true;draw()};$("oskip").onclick=()=>{draw._viaHs=true;scr="choice";draw()};return}
   if(scr==="letter"){
    B.innerHTML=letterHTML();F.innerHTML=`<button class="btn" id="onext" style="opacity:0;transition:opacity .4s">${only==="letter"?"Let's read":"Continue"}</button>`;
    const btn=$("onext");let ready=false;playSig(B,()=>{ready=true;btn.style.opacity=1});setTimeout(()=>{btn.style.opacity=1},4500);
-   btn.onclick=()=>{try{localStorage.setItem(LS,"1")}catch(e){}if(only==="letter"){close();return}scr="choice";draw()};return}
+   btn.onclick=()=>{try{localStorage.setItem(LS,"1")}catch(e){}if(only==="letter"){close();return}if(!standalone()){scr="hs";draw._viaHs=true}else scr="choice";draw()};return}
   if(scr==="choice"){
    B.innerHTML=`<h1 id="onbT">Welcome!</h1><p class="lead">Are you joining the challenge for the first time, or coming back?</p>
     <div class="choice"><button class="bigc" id="cj"><span class="ic">${ICON.wave}</span><span><b>I'm joining</b><small>Set up the app in about a minute</small></span></button>
