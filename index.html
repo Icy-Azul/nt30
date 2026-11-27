@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="NT in 30">
@@ -1024,6 +1024,11 @@ body{padding-bottom:calc(74px + env(safe-area-inset-bottom))}
 @keyframes g1t{50%{transform:translate(-50%,-50%) scale(1.25);opacity:1}}
 @keyframes g2t{50%{transform:translate(-50%,-50%) scale(1.3);opacity:1}}
 .s-fx .mtrain{will-change:transform}
+/* ---- no sideways scroll / zoom ---- */
+html{overflow-x:hidden;touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{overflow-x:hidden;max-width:100vw}
+[data-skin=star] .art-s{overflow:hidden}
+input,textarea,select,#bk textarea,.tg select{font-size:16px!important}
 /* help */
 #vhelp .card details+details{margin-top:4px}
 #vhelp .card p,#vhelp .card li{font-weight:700;font-size:14.5px;line-height:1.45}
@@ -1994,7 +1999,7 @@ async function enablePush(){
 async function syncPush(sub){const c=cloud();if(!c||!c.user())return;try{if(!sub&&"serviceWorker" in navigator){const r=await navigator.serviceWorker.getRegistration();sub=r&&await r.pushManager.getSubscription()}
  await c.savePush({sub:st.nt.on&&sub?JSON.parse(JSON.stringify(sub)):null,remind:!!st.nt.remind,time:st.nt.time,others:!!st.nt.others,tz:Intl.DateTimeFormat().resolvedOptions().timeZone||"America/Denver",name:st.n||"",p:st.p,off:st.off||0})}catch(e){console.warn("[nt30] push sync",e)}}
 async function disablePush(){st.nt.on=false;save();try{const r=await navigator.serviceWorker.getRegistration();const s=r&&await r.pushManager.getSubscription();if(s)await s.unsubscribe()}catch(e){}await syncPush(null)}
-if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js").catch(e=>console.warn("[nt30] sw",e));
+if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).then(r=>{document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")r.update().catch(()=>{})})}).catch(e=>console.warn("[nt30] sw",e));
 
 /* ---------- settings extras ---------- */
 function tgl(id,on,label,small){return `<div class="tg"><div><b>${label}</b><small>${small}</small></div><button class="sw2" role="switch" id="${id}" aria-checked="${!!on}" aria-label="${label}"></button></div>`}
@@ -2043,6 +2048,14 @@ function playSig(root,done){
  setTimeout(()=>{const pr=root.querySelector("#sigpr");if(pr)pr.classList.add("on");done&&done()},fast?0:(t+.2)*1000);
 }
 
+/* ---------- no pinch zoom ---------- */
+["gesturestart","gesturechange"].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
+document.addEventListener("touchmove",e=>{if(e.touches&&e.touches.length>1)e.preventDefault()},{passive:false});
+/* ---------- stay up to date ---------- */
+const BUILD="1795816081";
+async function checkUpdate(){if(location.protocol!=="https:"||BUILD.startsWith("__"))return;try{const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"});if(!r.ok)return;const v=(await r.json()).v;
+ if(v&&v!==BUILD){let tried="";try{tried=sessionStorage.getItem("nt30-upd")||""}catch(e){}if(tried===v)return;try{sessionStorage.setItem("nt30-upd",v)}catch(e){}save();setTimeout(()=>location.reload(),400)}}catch(e){}}
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")checkUpdate()});setTimeout(checkUpdate,1500);
 /* ---------- star position ---------- */
 function placeStar(){const a=document.querySelector(".art-s");if(!a||skin!=="star")return;const W=a.clientWidth,H=a.clientHeight;if(!W)return;const s=Math.max(W/360,H/220);
  a.style.setProperty("--sx",((W-360*s)/2+262*s).toFixed(1)+"px");a.style.setProperty("--sy",((H-220*s)/2+98*s).toFixed(1)+"px");a.style.setProperty("--ss",(s/1.15).toFixed(3))}

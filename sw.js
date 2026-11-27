@@ -1,12 +1,13 @@
 // NT in 30 service worker: offline support + push notifications
-const CACHE = "nt30-v10";
+const CACHE = "nt30-v11";
 const CORE = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./apple-touch-icon.png", "./favicon.png"];
 self.addEventListener("install", e => { self.skipWaiting(); e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).catch(() => {})); });
 self.addEventListener("activate", e => { e.waitUntil((async () => { for (const k of await caches.keys()) if (k !== CACHE) await caches.delete(k); await self.clients.claim(); })()); });
 self.addEventListener("fetch", e => {
   const r = e.request; if (r.method !== "GET") return;
   const u = new URL(r.url); if (u.origin !== location.origin) return;
-  e.respondWith(fetch(r).then(res => { if (res.ok) { const cp = res.clone(); caches.open(CACHE).then(c => c.put(r, cp)); } return res; })
+  const fresh = r.mode === "navigate" || /\/$|\.html$|\.json$/.test(u.pathname);
+  e.respondWith((fresh ? fetch(u.href, { cache: "no-store", credentials: "same-origin" }) : fetch(r)).then(res => { if (res.ok) { const cp = res.clone(); caches.open(CACHE).then(c => c.put(r, cp)); } return res; })
     .catch(() => caches.match(r, { ignoreSearch: true }).then(m => m || caches.match("./index.html"))));
 });
 self.addEventListener("push", e => {
