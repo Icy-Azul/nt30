@@ -979,6 +979,12 @@ body{padding-bottom:calc(74px + env(safe-area-inset-bottom))}
 .art-r.idle .rose{animation:cspin 2.4s cubic-bezier(.15,.8,.3,1)}
 @media(prefers-reduced-motion:reduce){.bubble .w,.letter p,.hstep{opacity:1!important;transform:none!important}.dots30 i{opacity:1!important;transform:none!important}}
 
+.pwrap{position:relative;display:block}
+.pwrap input{padding-right:70px}
+.peek{position:absolute;right:8px;top:50%;transform:translateY(-50%);border:0;background:var(--blue2);color:var(--blue);font:800 13px Nunito,sans-serif;border-radius:10px;padding:6px 10px;cursor:pointer}
+.ohelp{display:block;margin-top:4px;color:var(--mute);font-weight:700;font-size:12.5px}
+.acct .who small b{font-weight:900}
+
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
 </style></head><body>
 <div class="wrap">
@@ -1048,7 +1054,7 @@ body{padding-bottom:calc(74px + env(safe-area-inset-bottom))}
   <section class="card"><details><summary>Family and feed</summary><p>The Family page shows everyone in the challenge, how far along they are, and who read today. The feed shows when someone finishes a reading and any thoughts they share. Tap the heart to cheer someone on.</p></details></section>
   <section class="card"><details><summary>Privacy</summary><p>Turn off <span class="k">Share my progress</span> in Settings to hide yourself from the Family page and stop posting when you finish. Turn on <span class="k">Post anonymously</span> to show "Anonymous" instead of your name in the feed, or check the box on any single thought. Thoughts only post when you choose to share them, and you can edit or delete them anytime.</p></details></section>
   <section class="card"><details><summary>Notifications</summary><p>On iPhone, add the app to your Home Screen and open it from there first. Then go to Settings and tap <span class="k">Turn on notifications</span>. You can choose a reminder time, or turn them off anytime.</p></details></section>
-  <section class="card"><details><summary>Switching phones</summary><p>Sign in with your name and 6-digit PIN on the new phone. Your progress comes with you.</p></details></section>
+  <section class="card"><details><summary>Switching phones</summary><p>Sign in with your username and password on the new phone. Your progress comes with you. Forgot your password? Text Shantz and he can reset it.</p></details></section>
   <section class="card"><details><summary>Questions or feedback?</summary><p>Text Shantz! He built this app and would love to hear what could be better.</p></details></section>
  </section>
  <section id="vrecap" class="view" hidden><div class="phead"><h2>My recap</h2><p>Your challenge at a glance</p></div><div id="recapbody"></div></section>
@@ -1925,7 +1931,7 @@ function playSig(root,done){
 /* ===== account UI ===== */
 function renderAcct(){
  const a=$("acctcard"),c=cloud();if(!a)return;
- if(c&&c.user()){a.innerHTML=`<div class="acct"><div class="who">Signed in as ${esc(c.user().name||st.n||"you")}<small>Your progress is saved to the family board</small></div><button class="mini" id="aout">Sign out</button></div>
+ if(c&&c.user()){a.innerHTML=`<div class="acct"><div class="who">Signed in as ${esc(c.user().name||st.n||"you")}<small>${c.user().user?`Username: <b>${esc(c.user().user)}</b> · `:""}Your progress is saved to your account</small></div><button class="mini" id="aout">Sign out</button></div>
   <button class="link" id="adel" style="padding:10px 0 0">Remove me from the family board</button>
   <div class="confirm" id="adelc"><button class="yes" id="adely">Delete my account</button><button class="no" id="adeln">Keep it</button></div>`;
   $("aout").onclick=async()=>{await c.signOut();renderAcct()};
@@ -1934,30 +1940,43 @@ function renderAcct(){
  else a.innerHTML=`<div class="acct"><div class="who">Not signed in<small>Sign in to save progress online and join the family board</small></div><button class="mini" id="ain">Sign in</button></div>`,$("ain").onclick=()=>{closeSheet();openAccount()};
 }
 function alert0(m){const a=$("acctcard");if(a){const p=document.createElement("p");p.className="note";p.style.color="var(--coral)";p.textContent=m;a.appendChild(p)}}
-function pinOk(p){return /^\d{6}$/.test(p)}
-async function doAccount(mode,name,pin){
+const unameOk=u=>/^[a-z0-9][a-z0-9._-]{2,23}$/.test(u);
+const normU=u=>String(u||"").trim().toLowerCase().replace(/\s+/g,".");
+async function doAccount(mode,f){
  const c=cloud();if(!c)throw new Error("offline");
- name=name.trim().replace(/\s+/g," ");if(name.length<2)throw new Error("Please enter your name.");
- if(!pinOk(pin))throw new Error("Your PIN needs to be exactly 6 numbers.");
- if(mode==="new")await c.signUp(name,pin);else await c.signIn(name,pin);
- if(!st.n||mode==="new"){st.n=name;$("nm").value=name;save()}
+ const u=normU(f.user),pw=String(f.pw||"");
+ if(mode==="new"){
+  const name=String(f.name||"").trim().replace(/\s+/g," ");if(name.length<2)throw new Error("Please enter your name.");
+  if(!unameOk(u))throw new Error("Usernames are 3 to 24 letters or numbers. You can use . _ or -");
+  if(pw.length<6)throw new Error("Your password needs at least 6 characters.");
+  if(pw!==f.pw2)throw new Error("Those passwords don't match.");
+  await c.signUp(u,pw,name);st.n=name;$("nm").value=name;save();
+ }else{
+  if(!u)throw new Error("Enter your username.");if(!pw)throw new Error("Enter your password.");
+  await c.signIn(u,pw);
+ }
 }
 function acctForm(mode,host,onDone){
  const isNew=mode==="new";
- host.innerHTML=`<h1 id="onbT">${isNew?"Create your account":"Welcome back"}</h1><p class="lead">${isNew?"Your name shows on the family board. Your PIN lets you get your progress back on any phone.":"Sign in with the name and PIN you used before."}</p>
-  <label class="ofield"><span>Your name</span><input id="oname" autocomplete="name" placeholder="First and last name" value="${esc(st.n||"")}"></label>
-  <label class="ofield"><span>${isNew?"Pick a 6-digit PIN":"Your 6-digit PIN"}</span><input id="opin" class="pin" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="${isNew?"new-password":"current-password"}" placeholder="••••••"></label>
-  ${isNew?`<div class="ohint">Write your PIN down or save it in Notes. You'll need it if you switch phones.</div>`:""}
+ host.innerHTML=`<h1 id="onbT">${isNew?"Create your account":"Welcome back"}</h1><p class="lead">${isNew?"Your account keeps your progress safe and lets you sign in on any phone.":"Sign in with your username and password."}</p>
+  ${isNew?`<label class="ofield"><span>Your name</span><input id="oname" autocomplete="name" placeholder="First and last name" value="${esc(st.n||"")}"><small class="ohelp">This is what the family sees.</small></label>`:""}
+  <label class="ofield"><span>Username</span><input id="ouser" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="${isNew?"Pick a username":"Your username"}"></label>
+  <label class="ofield"><span>Password</span><span class="pwrap"><input id="opw" type="password" autocomplete="${isNew?"new-password":"current-password"}" placeholder="${isNew?"At least 6 characters":"Your password"}"><button type="button" class="peek" id="opeek">Show</button></span></label>
+  ${isNew?`<label class="ofield"><span>Type your password again</span><input id="opw2" type="password" autocomplete="new-password" placeholder="Same password"></label>
+  <div class="ohint">Save your username and password in your phone's password manager or Notes. You'll need them if you switch phones.</div>`:""}
   <div class="omsg" id="omsg" aria-live="polite"></div>
   <button class="btn" id="ogo">${isNew?"Create account":"Sign in"}</button>
-  <button class="olink" id="oswap">${isNew?"I already have an account":"I'm new, create an account"}</button>`;
- $("opin").addEventListener("input",e=>{e.target.value=e.target.value.replace(/\D/g,"").slice(0,6)});
+  <button class="olink" id="oswap">${isNew?"I already have an account":"I'm new, create an account"}</button>
+  ${isNew?"":`<p class="nmsg" style="text-align:center">Forgot your password? Text Shantz and he can reset it.</p>`}`;
+ $("ouser").addEventListener("input",e=>{const v=e.target.value.toLowerCase().replace(/\s+/g,".");if(v!==e.target.value)e.target.value=v});
+ $("opeek").onclick=()=>{const p=$("opw"),q=$("opw2"),sh=p.type==="password";p.type=sh?"text":"password";if(q)q.type=p.type;$("opeek").textContent=sh?"Hide":"Show"};
  $("oswap").onclick=()=>acctForm(isNew?"in":"new",host,onDone);
- $("ogo").onclick=async()=>{const b=$("ogo");b.disabled=true;$("omsg").textContent="";
-  try{await doAccount(mode,$("oname").value,$("opin").value);onDone()}
+ const go=async()=>{const b=$("ogo");b.disabled=true;$("omsg").textContent="";
+  try{await doAccount(mode,{name:isNew?$("oname").value:"",user:$("ouser").value,pw:$("opw").value,pw2:isNew?$("opw2").value:""});onDone()}
   catch(e){const m=String(e&&e.code||e&&e.message||e);
-   $("omsg").textContent=m.includes("email-already-in-use")?"That name is already taken. Try adding your last name or initial.":m.includes("invalid-credential")||m.includes("wrong-password")||m.includes("user-not-found")?"That name and PIN don't match. Check the spelling of your name.":m.includes("too-many-requests")?"Too many tries. Wait a minute and try again.":m==="offline"||m.includes("network")?"Can't reach the family board. Check your internet and try again.":(e&&e.message)||"Something went wrong. Try again."}
+   $("omsg").textContent=m.includes("email-already-in-use")?"That username is taken. Try another one.":m.includes("invalid-credential")||m.includes("wrong-password")||m.includes("user-not-found")||m.includes("invalid-email")?"That username and password don't match.":m.includes("weak-password")?"Pick a longer password (at least 6 characters).":m.includes("too-many-requests")?"Too many tries. Wait a minute and try again.":m==="offline"||m.includes("network")?"Can't reach the family board. Check your internet and try again.":(e&&e.message)||"Something went wrong. Try again."}
   b.disabled=false};
+ $("ogo").onclick=go;host.querySelectorAll("input").forEach(i=>i.addEventListener("keydown",e=>{if(e.key==="Enter")go()}));
 }
 function openAccount(){
  const o=$("onb");o.hidden=false;document.body.style.overflow="hidden";
@@ -1987,7 +2006,7 @@ function startOnboarding(only){
   if(scr==="choice"){
    B.innerHTML=`<h1 id="onbT">Welcome!</h1><p class="lead">Are you joining the challenge for the first time, or coming back?</p>
     <div class="choice"><button class="bigc" id="cj"><span class="ic">${ICON.wave}</span><span><b>I'm joining</b><small>Set up the app in about a minute</small></span></button>
-    <button class="bigc" id="cr"><span class="ic">${ICON.back.replace('d="M15 5l-7 7 7 7"','d="M9 5l7 7-7 7"')}</span><span><b>I'm returning</b><small>Sign in with your name and PIN</small></span></button></div>`;F.innerHTML="";
+    <button class="bigc" id="cr"><span class="ic">${ICON.back.replace('d="M15 5l-7 7 7 7"','d="M9 5l7 7-7 7"')}</span><span><b>I'm returning</b><small>Sign in with your username and password</small></span></button></div>`;F.innerHTML="";
    $("cj").onclick=()=>{mode="join";step=0;scr="join";draw()};$("cr").onclick=()=>{scr="signin";draw()};return}
   if(scr==="signin"){
    if(!cloud()&&window.NT_FB&&!draw._w){B.innerHTML=`<h1 id="onbT">Connecting…</h1><p class="lead">Getting the family board ready.</p>`;let t=0;const iv=setInterval(()=>{t+=300;if(cloud()||t>8000){clearInterval(iv);draw._w=true;draw()}},300);return}
@@ -2108,7 +2127,7 @@ const stop=()=>{unsub.forEach(f=>{try{f()}catch(e){}});unsub=[]};
 A.onAuthStateChanged(auth,async u=>{
  stop();members=[];feed=[];admin=false;
  if(!u){cur=null;window.NT.changed();return}
- cur={uid:u.uid,name:u.displayName||""};
+ cur={uid:u.uid,name:u.displayName||"",user:(u.email||"").split("@")[0]};
  try{const snap=await F.getDoc(F.doc(db,"members",u.uid));let c=snap.exists()?snap.data():null;
   try{const pv=await F.getDoc(F.doc(db,"members",u.uid,"private","me"));if(pv.exists())c=Object.assign(c||{},{_priv:pv.data()})}catch(e){}
   if(c){if(c.name)cur.name=c.name;window.NT.apply(c)}}catch(e){console.warn("[nt30] load failed",e)}
@@ -2122,8 +2141,8 @@ const ev=(id,data)=>F.setDoc(F.doc(db,"feed",id),data);
 const who=(g,anon)=>anon?{name:"Anonymous",anon:true}:{name:(g.n||cur.name||"").slice(0,40),anon:false};
 window.NTCloud={ready:true,user:()=>cur,list:()=>{const me=cur&&cur.uid;const g=window.NT.get();const mine={id:me,name:g.n||cur&&cur.name,d:g.d,off:g.off,t:g.t,p:g.p,share:g.share!==false};return [...members.filter(m=>m.id!==me),...(cur?[mine]:[])]},
  feed:()=>feed,isAdmin:()=>admin,
- signUp:async(name,pin)=>{const c=await A.createUserWithEmailAndPassword(auth,email(name),pin);await A.updateProfile(c.user,{displayName:name});cur={uid:c.user.uid,name};await push();return c},
- signIn:async(name,pin)=>A.signInWithEmailAndPassword(auth,email(name),pin),
+ signUp:async(user,pw,name)=>{const c=await A.createUserWithEmailAndPassword(auth,email(user),pw);await A.updateProfile(c.user,{displayName:name});cur={uid:c.user.uid,name,user:slug(user)};await push();return c},
+ signIn:async(user,pw)=>A.signInWithEmailAndPassword(auth,email(user),pw),
  signOut:()=>A.signOut(auth),
  deleteAccount:async()=>{const u=auth.currentUser;if(!u)return;try{await F.deleteDoc(F.doc(db,"members",u.uid,"private","me"))}catch(e){}try{await F.deleteDoc(F.doc(db,"push",u.uid))}catch(e){}try{await F.deleteDoc(F.doc(db,"members",u.uid))}catch(e){console.warn("[nt30] delete doc failed",e)}await u.delete();cur=null},
  refresh:()=>window.NT.members(),
