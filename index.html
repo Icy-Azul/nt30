@@ -1029,6 +1029,32 @@ html{overflow-x:hidden;touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;te
 body{overflow-x:hidden;max-width:100vw}
 [data-skin=star] .art-s{overflow:hidden}
 input,textarea,select,#bk textarea,.tg select{font-size:16px!important}
+/* ---- experimental: iPhone Duo (unfolded) layout ---- */
+details.exp summary{font:700 15px Fredoka,sans-serif;color:var(--mute);min-height:26px}
+details.exp summary:after{font-size:20px}
+.expb{display:inline-block;font:900 10.5px Nunito,sans-serif;letter-spacing:.06em;text-transform:uppercase;background:#ffe9b8;color:#9a6a00;border-radius:99px;padding:2px 8px;margin-left:6px;vertical-align:2px}
+@media(min-width:560px){
+html.duo .wrap{max-width:1060px;padding:0 24px 70px}
+html.duo .top{margin:0 -24px;padding:10px 24px}
+html.duo .hero{min-height:0}
+html.duo #dash{display:block;columns:2;column-gap:16px}
+html.duo #dash>*{break-inside:avoid;margin:0 0 14px!important;display:block}
+html.duo #dash>.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-span:all;margin-top:4px!important}
+html.duo #vpath{max-width:min(620px,calc(100% - min(400px,46vw) - 24px));margin:0}
+html.duo #famlist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}
+html.duo #feedlist{columns:2;column-gap:14px}
+html.duo #feedlist>.fi{break-inside:avoid;display:flex}
+html.duo #vhelp,html.duo #vrecap{max-width:760px;margin:0 auto}
+html.duo #vadmin #adminbody{columns:2;column-gap:16px}html.duo #vadmin #adminbody>.card{break-inside:avoid;display:block;margin:0 0 14px}
+html.duo .sheet{left:auto;right:18px;top:78px;bottom:18px;width:min(400px,46vw);max-height:none;border-radius:26px;transform:translateX(115%);margin:0}
+html.duo .sheet.show{transform:none}
+html.duo .sbar{top:-10px}
+html.duo .scrim{background:rgba(29,53,87,.14)}
+html.duo .bnav{left:50%;right:auto;transform:translateX(-50%);bottom:12px;border-radius:22px;border:2px solid var(--line);width:min(560px,calc(100% - 32px));padding-bottom:8px}
+html.duo body{padding-bottom:100px}
+html.duo .win{padding:40px}
+html.duo .onb-in{max-width:560px}
+}
 /* help */
 #vhelp .card details+details{margin-top:4px}
 #vhelp .card p,#vhelp .card li{font-weight:700;font-size:14.5px;line-height:1.45}
@@ -2014,10 +2040,11 @@ function renderPrefs(){
   ${st.nt.on?tgl("tremind",st.nt.remind,"Daily reminder","If you haven't read yet")+(st.nt.remind?`<div class="tg"><div><b>Reminder time</b><small>Your local time</small></div><select id="ttime">${times}</select></div>`:"")+tgl("tothers",st.nt.others,"When others finish","When someone finishes a reading or shares a thought")+`<button class="link" id="toff" style="padding:8px 0 0">Turn off all notifications</button>`
    :`<p class="note" style="margin-top:4px">${canPush?"Get a daily reminder and see when others read.":isIOS()?"Add this app to your Home Screen, open it from there, then turn on notifications here.":"Get a daily reminder and see when others read."}</p><button class="btn ghost" id="ton" style="margin-top:10px"${canPush||!isIOS()?"":" disabled"}>${ICON.bell.replace("<svg",'<svg style="width:20px;height:20px;vertical-align:-4px;margin-right:6px"')}Turn on notifications</button>`}
   <p class="nmsg" id="tmsg"></p>
-  <p class="sec">Sounds</p>${tgl("tsnd",st.snd,"Sound effects","Little chimes when you finish a reading")}`;
+  <p class="sec">Sounds</p>${tgl("tsnd",st.snd,"Sound effects","Little chimes when you finish a reading")}
+  <details class="exp" style="margin-top:14px"${duoOn()?" open":""}><summary>Experimental</summary>${tgl("tduo",duoOn(),'iPhone Duo layout<span class="expb">Beta</span>',"For iPhone Duo when it's unfolded. Uses two columns and side panels on the big screen. Only on this phone.")}</details>`;
  P.querySelectorAll(".seg button").forEach(b=>b.onclick=()=>{setPath(b.dataset.p);renderPrefs();syncPush()});
  const sw=(id,f)=>{const e=$(id);if(e)e.onclick=()=>{const v=e.getAttribute("aria-checked")!=="true";e.setAttribute("aria-checked",v);f(v)}};
- sw("tshare",v=>{st.share=v;save()});sw("tanon",v=>{st.anon=v;save();const c=cloud();if(c&&c.user())c.setAnon(v).then(()=>{$("tmsg").textContent=v?"Your posts now show as Anonymous.":"Your name is back on your posts."})});sw("tsnd",v=>{st.snd=v;save();if(v)sfx("tap")});
+ sw("tduo",v=>{setDuo(v)});sw("tshare",v=>{st.share=v;save()});sw("tanon",v=>{st.anon=v;save();const c=cloud();if(c&&c.user())c.setAnon(v).then(()=>{$("tmsg").textContent=v?"Your posts now show as Anonymous.":"Your name is back on your posts."})});sw("tsnd",v=>{st.snd=v;save();if(v)sfx("tap")});
  sw("tremind",v=>{st.nt.remind=v;save();syncPush();renderPrefs()});sw("tothers",v=>{st.nt.others=v;save();syncPush()});
  const tt=$("ttime");if(tt)tt.onchange=()=>{st.nt.time=tt.value;save();syncPush()};
  const on=$("ton");if(on)on.onclick=async()=>{on.disabled=true;const m=await enablePush().catch(e=>"Couldn't turn on notifications. "+(e&&e.message||""));$("tmsg").textContent=m;on.disabled=false;if(!m)renderPrefs()};
@@ -2048,11 +2075,15 @@ function playSig(root,done){
  setTimeout(()=>{const pr=root.querySelector("#sigpr");if(pr)pr.classList.add("on");done&&done()},fast?0:(t+.2)*1000);
 }
 
+/* ---------- experimental duo layout (this device only) ---------- */
+function duoOn(){try{return localStorage.getItem("nt30-duo")==="1"}catch(e){return false}}
+function setDuo(v){try{localStorage.setItem("nt30-duo",v?"1":"0")}catch(e){}document.documentElement.classList.toggle("duo",!!v);setTimeout(()=>{drawMaps();placeStar();if(view==="home")renderDash()},60)}
+document.documentElement.classList.toggle("duo",duoOn());
 /* ---------- no pinch zoom ---------- */
 ["gesturestart","gesturechange"].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
 document.addEventListener("touchmove",e=>{if(e.touches&&e.touches.length>1)e.preventDefault()},{passive:false});
 /* ---------- stay up to date ---------- */
-const BUILD="1795816081";
+const BUILD="1795816401";
 async function checkUpdate(){if(location.protocol!=="https:"||BUILD.startsWith("__"))return;try{const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"});if(!r.ok)return;const v=(await r.json()).v;
  if(v&&v!==BUILD){let tried="";try{tried=sessionStorage.getItem("nt30-upd")||""}catch(e){}if(tried===v)return;try{sessionStorage.setItem("nt30-upd",v)}catch(e){}save();setTimeout(()=>location.reload(),400)}}catch(e){}}
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")checkUpdate()});setTimeout(checkUpdate,1500);
