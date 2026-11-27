@@ -985,6 +985,31 @@ body{padding-bottom:calc(74px + env(safe-area-inset-bottom))}
 .ohelp{display:block;margin-top:4px;color:var(--mute);font-weight:700;font-size:12.5px}
 .acct .who small b{font-weight:900}
 
+.vb{display:inline-block;width:16px;height:16px;vertical-align:-2px;margin-left:4px;flex:none}
+[data-skin=star] .vb path:first-child{fill:#f3c969}[data-skin=star] .vb path:last-child{stroke:#141a3d}
+[data-skin=refined] .vb path:first-child{fill:#7a2e2e}
+.akpi{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ak{background:var(--bg);border-radius:14px;padding:10px 12px}
+[data-skin=star] .ak{background:rgba(255,255,255,.06)}
+.ak b{display:block;font:700 26px Fredoka,sans-serif;line-height:1.1}
+.ak small{color:var(--mute);font-weight:800;font-size:12px}
+.abars{display:grid;gap:8px}
+.abar{display:grid;grid-template-columns:110px 1fr 34px;align-items:center;gap:8px;font-weight:800;font-size:13.5px}
+.abar .at{height:12px;border-radius:99px;background:var(--gray);overflow:hidden}
+.abar .at i{display:block;height:100%;border-radius:99px;background:var(--blue)}
+.abar b{text-align:right}
+.acols{display:flex;align-items:flex-end;gap:3px;height:120px;padding-top:8px}
+.acols .ac{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:3px}
+.acols .ac i{display:block;width:100%;min-height:2px;border-radius:4px 4px 1px 1px;background:var(--blue)}
+.acols small{font-size:9px;color:var(--mute);font-weight:800}
+.atab .arow{display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.atab .arow:first-child{border-top:0}
+.atab .av{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:#fff;font:700 14px Fredoka,sans-serif}
+.atab .nm{font-weight:900;font-size:14.5px}.atab .nm small{color:var(--mute);font-weight:700}
+.atab .meta{font-size:12px;color:var(--mute);font-weight:700}
+.tile.admin .ti{background:#2f8ce5;color:#fff}
+[data-skin=star] .tile.admin .ti{background:var(--gold);color:#141a3d}
+
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
 </style></head><body>
 <div class="wrap">
@@ -1057,6 +1082,7 @@ body{padding-bottom:calc(74px + env(safe-area-inset-bottom))}
   <section class="card"><details><summary>Switching phones</summary><p>Sign in with your username and password on the new phone. Your progress comes with you. Forgot your password? Text Shantz and he can reset it.</p></details></section>
   <section class="card"><details><summary>Questions or feedback?</summary><p>Text Shantz! He built this app and would love to hear what could be better.</p></details></section>
  </section>
+ <section id="vadmin" class="view" hidden><div class="phead"><h2>Admin</h2><p>App stats, just for you</p></div><div id="adminbody"></div></section>
  <section id="vrecap" class="view" hidden><div class="phead"><h2>My recap</h2><p>Your challenge at a glance</p></div><div id="recapbody"></div></section>
  <section id="vfeed" class="view" hidden>
   <div class="phead"><h2>Feed</h2><p>Updates and thoughts from the family</p></div>
@@ -1644,7 +1670,7 @@ function renderFam(){
  $("famsum").textContent=`${rows.length} ${rows.length===1?"person":"people"} reading together${diffDays()>=0&&diffDays()<30?` · ${rt} read today`:""}`;
  L.innerHTML=rows.map(r=>{const nm=String(r.m.name||"Someone");
   return `<div class="fm${r.m.id===me?" me":""}">${avatar(nm)}
-  <div class="mid"><div class="nm">${esc(nm)}${r.m.id===me?"<small>you</small>":""}</div><div class="pb"><i style="width:${(r.s.read/30*100).toFixed(1)}%"></i></div>
+  <div class="mid"><div class="nm">${esc(nm)}${badge(r.m.id)}${r.m.id===me?"<small>you</small>":""}</div><div class="pb"><i style="width:${(r.s.read/30*100).toFixed(1)}%"></i></div>
   <div class="meta">${r.s.read} of 30${r.k?` · <span class="fl">${FLAME}${r.k}</span>`:""}<span class="tags">${r.rt?`<span class="tg8 rt">Read today</span>`:""}${r.m.p==="ess"?`<span class="tg8">Essentials</span>`:""}</span></div></div><span class="st ${r.s.cls}">${r.s.t}</span></div>`}).join("");
 }
 
@@ -1740,14 +1766,14 @@ setInterval(()=>{if(document.hidden||view!=="home"||reduceMo())return;
 let idleTalk=0;setInterval(()=>{if(document.hidden||view!=="home")return;if(++idleTalk%3===0)talk("tap")},12000);
 
 /* ---------- views ---------- */
-const VIEWS=["home","path","fam","feed","help","recap"];
+const VIEWS=["home","path","fam","feed","help","recap","admin"];
 function stagger(el){if(reduceMo())return;let k=0;el.querySelectorAll(":scope > .card, :scope > #dash > *, :scope .tiles > *, :scope #famlist > *, :scope #feedlist > *:nth-child(-n+8)").forEach(n=>{if(k>12)return;n.animate([{opacity:0,transform:"translateY(14px) scale(.98)"},{opacity:1,transform:"none"}],{duration:420,delay:k*45,easing:"cubic-bezier(.2,.9,.3,1)",fill:"backwards"});k++})}
 function setView(v,instant){
  if(!VIEWS.includes(v))v="home";
  const prev=view,from=$("v"+prev),to=$("v"+v);
  document.querySelectorAll(".bnav button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===v));
  const enter=()=>{to.hidden=false;scrollTo(0,0);
-  if(v==="home")renderDash();if(v==="fam"){renderFam();const c=cloud();if(c)c.refresh()}if(v==="feed"){renderFeed();markFeedSeen()}if(v==="recap")renderRecap();if(v==="path")drawMaps();
+  if(v==="home")renderDash();if(v==="fam"){renderFam();const c=cloud();if(c)c.refresh()}if(v==="feed"){renderFeed();markFeedSeen()}if(v==="recap")renderRecap();if(v==="admin")renderAdmin();if(v==="path")drawMaps();
   if(!instant&&!reduceMo()){const dir=VIEWS.indexOf(v)>=VIEWS.indexOf(prev)?1:-1;to.animate([{opacity:0,transform:`translateX(${dir*34}px)`},{opacity:1,transform:"none"}],{duration:340,easing:"cubic-bezier(.2,.9,.3,1)"});stagger(to)}};
  view=v;
  if(prev===v||instant||reduceMo()||!from||from.hidden){VIEWS.forEach(x=>{const e=$("v"+x);if(e&&x!==v)e.hidden=true});enter();return}
@@ -1786,6 +1812,7 @@ function renderDash(){
   <button class="tile" data-go="fam"><span class="ti">${ICON.fam}</span><b>Family</b><small>Everyone's progress</small></button>
   <button class="tile" data-go="feed"><span class="ti">${ICON.feed}</span><b>Feed</b><small>Thoughts and updates</small></button>
   ${showRecap?`<button class="tile" data-go="recap"><span class="ti">${ICON.star}</span><b>My recap</b><small>Your challenge at a glance</small></button>`:""}
+  ${amAdmin()?`<button class="tile admin" data-go="admin"><span class="ti">${ICON.star}</span><b>Admin</b><small>App stats</small></button>`:""}
   <button class="tile" data-go="settings"><span class="ti">${ICON.gear}</span><b>Settings</b><small>Theme, reminders, privacy</small></button>
   <button class="tile" data-go="help"><span class="ti">${ICON.help}</span><b>Help</b><small>How it all works</small></button></div>`;
  D.innerHTML=`<div class="card dc today">${today}</div>${me}${fam}${feed}${tiles}`;
@@ -1804,10 +1831,10 @@ function feedItem(e){
  const c=cloud(),me=c&&c.user()?c.user().uid:"",hs=e.hearts||[],on=hs.includes(me),nm=e.anon?(e.uid===me?"Anonymous (you)":"Anonymous"):String(e.name||"Someone");
  const hb=`<button class="hb${on?" on":""}" data-id="${e.id}" aria-label="Heart">${on?ICON.heart:ICON.heartO}<span>${hs.length||""}</span></button>`;
  const av=e.anon?`<span class="av anon">?</span>`:avatar(nm);
- if(e.type==="thought")return `<div class="fi fth" data-id="${e.id}">${av}<div class="fbd"><div class="hd"><b>${esc(nm)}</b><small>${Number.isInteger(e.day)?`Day ${e.day+1} · ${esc(dayTitle(e.p,e.day))} · `:""}${ago(e.at)}${e.edited?" · edited":""}</small></div><div class="tx">${esc(e.text||"")}</div>
+ if(e.type==="thought")return `<div class="fi fth" data-id="${e.id}">${av}<div class="fbd"><div class="hd"><b>${esc(nm)}</b>${e.anon?"":badge(e.uid)}<small>${Number.isInteger(e.day)?`Day ${e.day+1} · ${esc(dayTitle(e.p,e.day))} · `:""}${ago(e.at)}${e.edited?" · edited":""}</small></div><div class="tx">${esc(e.text||"")}</div>
   <div class="ac">${hb}${e.uid===me||(c&&c.isAdmin())?`<button class="more" data-own="${e.id}">${e.uid===me?"Edit":"Remove"}</button>`:""}</div></div></div>`;
  const what=e.type==="finish"?`finished the whole challenge! 🎉`:`finished Day ${e.day+1}`;
- return `<div class="fi dn" data-id="${e.id}">${av}<div class="fbd"><div class="hd"><b>${esc(e.anon?nm:firstName(nm))}</b> ${what}<small>${e.type==="finish"?"":esc(dayTitle(e.p,e.day))+" · "}${ago(e.at)}</small></div></div>${hb}</div>`;
+ return `<div class="fi dn" data-id="${e.id}">${av}<div class="fbd"><div class="hd"><b>${esc(e.anon?nm:firstName(nm))}</b>${e.anon?"":badge(e.uid)} ${what}<small>${e.type==="finish"?"":esc(dayTitle(e.p,e.day))+" · "}${ago(e.at)}</small></div></div>${hb}</div>`;
 }
 let feedSeenAt=0;try{feedSeenAt=+localStorage.getItem("nt30-feedseen")||0}catch(e){}
 function markFeedSeen(){feedSeenAt=Date.now();try{localStorage.setItem("nt30-feedseen",String(feedSeenAt))}catch(e){}feedDot()}
@@ -1926,6 +1953,54 @@ function playSig(root,done){
  ps.forEach(p=>{const L=p.getTotalLength();p.style.strokeDasharray=L;p.style.strokeDashoffset=fast?0:L;if(fast)return;const dur=Math.max(.12,L/520);
   p.animate([{strokeDashoffset:L},{strokeDashoffset:0}],{duration:dur*1000,delay:t*1000,easing:"ease-in-out",fill:"forwards"});t+=dur+.06});
  setTimeout(()=>{const pr=root.querySelector("#sigpr");if(pr)pr.classList.add("on");done&&done()},fast?0:(t+.2)*1000);
+}
+
+/* ---------- admin ---------- */
+const VBADGE='<svg class="vb" viewBox="0 0 24 24" aria-label="Creator of the app"><title>Creator of the app</title><path d="M12 1.8l2.4 1.9 3-.3 1 2.9 2.7 1.4-.6 3 1.6 2.6-2.2 2.1-.1 3.1-3 .6-1.8 2.5-2.9-1.1-2.9 1.1-1.8-2.5-3-.6-.1-3.1L1.9 13l1.6-2.6-.6-3 2.7-1.4 1-2.9 3 .3z" fill="#2f8ce5"/><path d="M7.6 12.2l3 3 5.8-6" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const badge=uid=>{const c=cloud();return c&&uid&&c.adminUid&&c.adminUid()===uid?VBADGE:""};
+const amAdmin=()=>{const c=cloud();return !!(c&&c.user()&&c.amAdmin&&c.amAdmin())};
+function bars(rows,max){max=max||Math.max(1,...rows.map(r=>r[1]));return `<div class="abars">${rows.map(([l,v])=>`<div class="abar"><span class="al">${esc(String(l))}</span><span class="at"><i style="width:${(v/max*100).toFixed(1)}%"></i></span><b>${v}</b></div>`).join("")}</div>`}
+function cols(vals,labels){const max=Math.max(1,...vals);return `<div class="acols">${vals.map((v,i)=>`<div class="ac" title="${esc(labels[i])}: ${v}"><i style="height:${(v/max*100).toFixed(1)}%"></i><small>${esc(labels[i])}</small></div>`).join("")}</div>`}
+async function renderAdmin(){
+ const R=$("adminbody");if(!R)return;
+ if(!amAdmin()){R.innerHTML=`<div class="feed-empty">This page is only for the app's creator.</div>`;return}
+ R.innerHTML=`<div class="feed-empty">Loading stats…</div>`;
+ let data;try{data=await cloud().adminData()}catch(e){R.innerHTML=`<div class="feed-empty">Couldn't load stats. ${esc(e&&e.message||"")}</div>`;return}
+ const {members,push,feed}=data,N=members.length,todayK=iso(today0()),df=diffDays();
+ const ts=x=>x&&x.toDate?x.toDate():null;
+ const st8=members.map(m=>({m,s:memberStatus(m),k:memberStreak(m),rt:readToday(m)}));
+ const reads=members.reduce((a,m)=>a+(m.d||[]).length,0);
+ const chapters=members.reduce((a,m)=>a+Math.round((m.p==="ess"?89:260)*(m.d||[]).length/30),0);
+ const notif=push.filter(p=>p.sub&&p.sub.endpoint).length;
+ const thoughts=feed.filter(e=>e.type==="thought"),hearts=feed.reduce((a,e)=>a+(e.hearts||[]).length,0);
+ const by=k=>{const o={};members.forEach(m=>{const v=k(m);o[v]=(o[v]||0)+1});return Object.entries(o).sort((a,b)=>b[1]-a[1])};
+ const status={dn:"Finished",on:"Caught up",ah:"Reading ahead",be:"Catching up",pre:"Not started"};
+ const stCount=Object.entries(status).map(([k,l])=>[l,st8.filter(x=>x.s.cls===k).length]).filter(x=>x[1]);
+ // readings per day of the challenge
+ const perDay=Array.from({length:30},(_,i)=>members.filter(m=>(m.d||[]).includes(i)).length);
+ // activity: check-offs per calendar date, last 14 days
+ const days14=Array.from({length:14},(_,k)=>{const d=today0();d.setDate(d.getDate()-13+k);return iso(d)});
+ const act=days14.map(k=>members.reduce((a,m)=>a+Object.values(m.t||{}).filter(v=>isoLocal(v)===k).length,0));
+ const recentJoin=[...members].filter(m=>ts(m.updated)).sort((a,b)=>ts(b.updated)-ts(a.updated));
+ const tile=(v,l)=>`<div class="ak"><b>${v}</b><small>${l}</small></div>`;
+ R.innerHTML=`
+ <div class="card"><div class="lbl">At a glance</div><div class="akpi">
+  ${tile(N,"accounts")}${tile(st8.filter(x=>x.rt).length,"read today")}${tile(reads,"readings checked off")}${tile(chapters.toLocaleString(),"chapters read, about")}
+  ${tile(notif,"have notifications on")}${tile(thoughts.length,"thoughts shared")}${tile(hearts,"hearts given")}${tile(members.filter(m=>m.share===false).length,"keep progress private")}</div></div>
+ <div class="card"><div class="lbl">Where everyone is</div>${stCount.length?bars(stCount,N):`<p class="note">No one yet.</p>`}</div>
+ <div class="card"><div class="lbl">Check-offs per day, last 14 days</div>${cols(act,days14.map(k=>k.slice(8)))}</div>
+ <div class="card"><div class="lbl">How many people have read each day</div>${cols(perDay,perDay.map((_,i)=>String(i+1)))}</div>
+ <div class="card"><div class="lbl">Reading path</div>${bars(by(m=>m.p==="ess"?"Essentials":"Full"),N)}<div class="lbl" style="margin-top:14px">Theme</div>${bars(by(m=>({playful:"Playful",basic:"Basic",refined:"Refined",star:"A New Star"})[m.skin]||"Playful"),N)}</div>
+ <div class="card"><div class="lbl">Everyone (${N})</div><div class="atab">${st8.sort((a,b)=>String(a.m.name||"").localeCompare(String(b.m.name||""))).map(x=>{const m=x.m,p=push.find(p=>p.id===m.id),last=ts(m.updated);
+   return `<div class="arow">${avatar(m.name)}<div class="mid"><div class="nm">${esc(m.name||"(no name)")}${badge(m.id)} ${m.user?`<small>@${esc(m.user)}</small>`:""}</div>
+   <div class="meta">${(m.d||[]).length}/30 · ${m.p==="ess"?"Essentials":"Full"} · ${status[x.s.cls]}${x.k?` · ${x.k} streak`:""}${m.share===false?" · private":""}${p&&p.sub?" · 🔔":""}${last?` · seen ${ago(m.updated)}`:""}</div></div></div>`}).join("")||`<p class="note">No accounts yet.</p>`}</div></div>
+ <div class="card"><div class="lbl">Recent thoughts</div>${thoughts.slice(0,15).map(e=>`<div class="rcq"><small>${esc(e.anon?`Anonymous (${(members.find(m=>m.id===e.uid)||{}).name||"?"})`:e.name)} · Day ${(e.day??0)+1} · ${ago(e.at)} · ${(e.hearts||[]).length} ♥ <button class="link adel" data-id="${e.id}" style="padding:0 0 0 6px">Remove</button></small>${esc(e.text||"")}</div>`).join("")||`<p class="note">No thoughts yet.</p>`}</div>
+ <div class="card"><div class="lbl">Tools</div>
+  <a class="chip" href="https://github.com/Icy-Azul/nt30/actions/workflows/reset.yml" target="_blank" rel="noopener">Reset someone's password ${ARR}</a>
+  <a class="chip" href="https://github.com/Icy-Azul/nt30/actions/workflows/notify.yml" target="_blank" rel="noopener">Notification job ${ARR}</a>
+  <a class="chip" href="https://console.firebase.google.com/project/nt30-family/firestore/databases/-default-/data" target="_blank" rel="noopener">Firebase data ${ARR}</a>
+  <p class="note">Stats update each time you open this page. Last loaded ${new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}.</p></div>`;
+ R.querySelectorAll(".adel").forEach(b=>b.onclick=async()=>{if(!confirm("Remove this thought from the feed?"))return;try{await cloud().deletePost(b.dataset.id);b.closest(".rcq").remove()}catch(e){alert("Couldn't remove it.")}});
 }
 
 /* ===== account UI ===== */
@@ -2117,9 +2192,9 @@ const [{initializeApp},A,F]=await Promise.all([import(base+"firebase-app.js"),im
 const app=initializeApp(window.NT_FB),auth=A.getAuth(app),db=F.getFirestore(app);
 const slug=n=>n.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g,".").replace(/^\.+|\.+$/g,"");
 const email=n=>`${slug(n)||"x"}@nt30.family`;
-let cur=null,members=[],feed=[],unsub=[],timer=null,admin=false,vapid=null;
+let cur=null,members=[],feed=[],unsub=[],timer=null,admin=false,vapid=null,adminUid=null;const ADMIN_EMAIL="shantzhansen@nt30.family";
 const push=async()=>{if(!cur)return;const g=window.NT.get();try{
- await F.setDoc(F.doc(db,"members",cur.uid),{name:(g.n||cur.name||"").slice(0,40),d:g.d,off:g.off||0,plan:g.plan||null,skin:g.skin,p:g.p||"full",t:g.t||{},share:g.share!==false,updated:F.serverTimestamp()},{merge:true});
+ await F.setDoc(F.doc(db,"members",cur.uid),{name:(g.n||cur.name||"").slice(0,40),user:cur.user||"",d:g.d,off:g.off||0,plan:g.plan||null,skin:g.skin,p:g.p||"full",t:g.t||{},share:g.share!==false,updated:F.serverTimestamp()},{merge:true});
  await F.setDoc(F.doc(db,"members",cur.uid,"private","me"),{notes:g.notes||{},nt:g.nt||{},snd:!!g.snd,anon:!!g.anon},{merge:true});
 }catch(e){console.warn("[nt30] save failed",e)}};
 window.addEventListener("nt30:save",()=>{clearTimeout(timer);timer=setTimeout(push,800)});
@@ -2131,7 +2206,9 @@ A.onAuthStateChanged(auth,async u=>{
  try{const snap=await F.getDoc(F.doc(db,"members",u.uid));let c=snap.exists()?snap.data():null;
   try{const pv=await F.getDoc(F.doc(db,"members",u.uid,"private","me"));if(pv.exists())c=Object.assign(c||{},{_priv:pv.data()})}catch(e){}
   if(c){if(c.name)cur.name=c.name;window.NT.apply(c)}}catch(e){console.warn("[nt30] load failed",e)}
- try{admin=(await F.getDoc(F.doc(db,"admins",u.uid))).exists()}catch(e){}
+ admin=(u.email||"").toLowerCase()===ADMIN_EMAIL;
+ if(admin){try{await F.setDoc(F.doc(db,"meta","admin"),{uid:u.uid})}catch(e){console.warn("[nt30] admin flag",e)}}
+ try{const a=await F.getDoc(F.doc(db,"meta","admin"));adminUid=a.exists()?a.data().uid:null}catch(e){}
  await push();
  unsub.push(F.onSnapshot(F.query(F.collection(db,"members"),F.where("share","==",true)),qs=>{members=qs.docs.map(x=>({id:x.id,...x.data()}));window.NT.members()},e=>console.warn("[nt30] board failed",e)));
  unsub.push(F.onSnapshot(F.query(F.collection(db,"feed"),F.orderBy("at","desc"),F.limit(120)),qs=>{feed=qs.docs.map(x=>({id:x.id,...x.data({serverTimestamps:"estimate"})}));window.NT.feed()},e=>console.warn("[nt30] feed failed",e)));
@@ -2140,7 +2217,9 @@ A.onAuthStateChanged(auth,async u=>{
 const ev=(id,data)=>F.setDoc(F.doc(db,"feed",id),data);
 const who=(g,anon)=>anon?{name:"Anonymous",anon:true}:{name:(g.n||cur.name||"").slice(0,40),anon:false};
 window.NTCloud={ready:true,user:()=>cur,list:()=>{const me=cur&&cur.uid;const g=window.NT.get();const mine={id:me,name:g.n||cur&&cur.name,d:g.d,off:g.off,t:g.t,p:g.p,share:g.share!==false};return [...members.filter(m=>m.id!==me),...(cur?[mine]:[])]},
- feed:()=>feed,isAdmin:()=>admin,
+ feed:()=>feed,isAdmin:()=>admin,amAdmin:()=>admin,adminUid:()=>adminUid,
+ adminData:async()=>{if(!admin)throw new Error("not admin");const [ms,ps,fs]=await Promise.all([F.getDocs(F.collection(db,"members")),F.getDocs(F.collection(db,"push")),F.getDocs(F.query(F.collection(db,"feed"),F.orderBy("at","desc"),F.limit(500)))]);
+  return{members:ms.docs.map(x=>({id:x.id,...x.data()})),push:ps.docs.map(x=>({id:x.id,...x.data()})),feed:fs.docs.map(x=>({id:x.id,...x.data()}))}},
  signUp:async(user,pw,name)=>{const c=await A.createUserWithEmailAndPassword(auth,email(user),pw);await A.updateProfile(c.user,{displayName:name});cur={uid:c.user.uid,name,user:slug(user)};await push();return c},
  signIn:async(user,pw)=>A.signInWithEmailAndPassword(auth,email(user),pw),
  signOut:()=>A.signOut(auth),
