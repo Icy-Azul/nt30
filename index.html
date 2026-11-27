@@ -1079,7 +1079,7 @@ function setSkin(k){skin=k;try{localStorage.setItem(SK,k)}catch(e){}document.doc
 const cloud=()=>window.NTCloud&&window.NTCloud.ready?window.NTCloud:null;
 window.NT={get:()=>({d:st.d.slice(),n:st.n,off:st.off,plan:st.plan||null,skin}),
  apply:(c)=>{if(!c)return;const u=new Set([...(st.d||[]),...(c.d||[])].filter(x=>Number.isInteger(x)&&x>=0&&x<30));st.d=[...u];
-  if(c.n&&!st.n)st.n=c.n;if(Number.isInteger(c.off)&&!st.off)st.off=c.off;if(c.plan&&!st.plan)st.plan=c.plan;setStart();
+  if(c.name&&!st.n)st.n=c.name;if(Number.isInteger(c.off)&&!st.off)st.off=c.off;if(c.plan&&!st.plan)st.plan=c.plan;setStart();
   try{localStorage.setItem(K,JSON.stringify(st))}catch(e){}
   if(c.skin&&["playful","basic","refined"].includes(c.skin)&&c.skin!==skin){skin=c.skin;try{localStorage.setItem(SK,skin)}catch(e){}document.documentElement.dataset.skin=skin}
   $("nm").value=st.n;render();if(view==="fam")renderFam()},
@@ -1120,9 +1120,15 @@ function renderFam(){
 /* ===== account UI ===== */
 function renderAcct(){
  const a=$("acctcard"),c=cloud();if(!a)return;
- if(c&&c.user()){a.innerHTML=`<div class="acct"><div class="who">Signed in as ${esc(c.user().name||st.n||"you")}<small>Your progress is saved to the family board</small></div><button class="mini" id="aout">Sign out</button></div>`;$("aout").onclick=async()=>{await c.signOut();renderAcct()}}
+ if(c&&c.user()){a.innerHTML=`<div class="acct"><div class="who">Signed in as ${esc(c.user().name||st.n||"you")}<small>Your progress is saved to the family board</small></div><button class="mini" id="aout">Sign out</button></div>
+  <button class="link" id="adel" style="padding:10px 0 0">Remove me from the family board</button>
+  <div class="confirm" id="adelc"><button class="yes" id="adely">Delete my account</button><button class="no" id="adeln">Keep it</button></div>`;
+  $("aout").onclick=async()=>{await c.signOut();renderAcct()};
+  $("adel").onclick=()=>$("adelc").classList.toggle("show");$("adeln").onclick=()=>$("adelc").classList.remove("show");
+  $("adely").onclick=async()=>{try{await c.deleteAccount()}catch(e){alert0("Couldn't delete right now. Sign out and back in, then try again.")}renderAcct()}}
  else a.innerHTML=`<div class="acct"><div class="who">Not signed in<small>Sign in to save progress online and join the family board</small></div><button class="mini" id="ain">Sign in</button></div>`,$("ain").onclick=()=>{closeSheet();openAccount()};
 }
+function alert0(m){const a=$("acctcard");if(a){const p=document.createElement("p");p.className="note";p.style.color="var(--coral)";p.textContent=m;a.appendChild(p)}}
 function pinOk(p){return /^\d{6}$/.test(p)}
 async function doAccount(mode,name,pin){
  const c=cloud();if(!c)throw new Error("offline");
@@ -1267,6 +1273,7 @@ window.NTCloud={ready:true,user:()=>cur,list:()=>members,
  signUp:async(name,pin)=>{const c=await A.createUserWithEmailAndPassword(auth,email(name),pin);await A.updateProfile(c.user,{displayName:name});cur={uid:c.user.uid,name};await push();return c},
  signIn:async(name,pin)=>A.signInWithEmailAndPassword(auth,email(name),pin),
  signOut:()=>A.signOut(auth),
+ deleteAccount:async()=>{const u=auth.currentUser;if(!u)return;try{await F.deleteDoc(F.doc(db,"members",u.uid))}catch(e){console.warn("[nt30] delete doc failed",e)}await u.delete();cur=null},
  refresh:()=>window.NT.members()};
 window.NT.changed();
 }catch(e){console.warn("[nt30] cloud unavailable",e)}
