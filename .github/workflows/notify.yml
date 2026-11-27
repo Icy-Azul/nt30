@@ -3,6 +3,9 @@ on:
   schedule:
     - cron: "*/15 * * * *"
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['notify/**', '.github/workflows/notify.yml']
 concurrency:
   group: notify
   cancel-in-progress: false
