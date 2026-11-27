@@ -1274,7 +1274,7 @@ const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${Str
 const parse=s=>new Date(s+"T12:00:00");
 const today0=()=>{const t=new Date();t.setHours(12,0,0,0);return t};
 const setStart=()=>{const d=parse(START);d.setDate(d.getDate()+st.off);st.s=iso(d)};setStart();
-const save=()=>{try{localStorage.setItem(K,JSON.stringify(st))}catch(e){}try{window.dispatchEvent(new CustomEvent("nt30:save"))}catch(e){}};
+const save=()=>{st.pu=Date.now();try{localStorage.setItem(K,JSON.stringify(st))}catch(e){}try{window.dispatchEvent(new CustomEvent("nt30:save"))}catch(e){}};
 const fmt=d=>d.toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"});
 const dateFor=i=>{const d=parse(st.s);d.setDate(d.getDate()+i);return d};
 const diffDays=()=>Math.round((today0()-parse(st.s))/DAY);
@@ -1710,15 +1710,15 @@ const THEMES=[
  {k:"basic",n:"Basic",d:"Clean and simple, no characters",sw:["#ffffff","#2563eb","#16a34a","#e5e7eb"]},
  {k:"refined",n:"Refined",d:"Historical, like an old illustrated Bible",sw:["#f3e8cf","#7a2e2e","#b08d57","#2f5d62"]},
  {k:"star",n:"A New Star",d:"Watercolor night with shepherds and wise men",sw:["#1b2458","#f3c969","#c9a0e4","#eaa3b7"]}];
-function setSkin(k){skin=k;try{localStorage.setItem(SK,k)}catch(e){}document.documentElement.dataset.skin=k;openSb=null;render();}
+function setSkin(k){skin=k;try{localStorage.setItem(SK,k)}catch(e){}document.documentElement.dataset.skin=k;openSb=null;save();render();if(view==="home")renderDash()}
 
 /* ===== cloud bridge (Firebase module sets window.NTCloud) ===== */
 const cloud=()=>window.NTCloud&&window.NTCloud.ready?window.NTCloud:null;
-window.NT={get:()=>({d:st.d.slice(),n:st.n,off:st.off,plan:st.plan||null,skin,p:st.p,t:st.t||{},share:st.share!==false,anon:!!st.anon,notes:st.notes||{},nt:st.nt,snd:!!st.snd}),
+window.NT={get:()=>({d:st.d.slice(),n:st.n,off:st.off,plan:st.plan||null,skin,pu:st.pu||0,p:st.p,t:st.t||{},share:st.share!==false,anon:!!st.anon,notes:st.notes||{},nt:st.nt,snd:!!st.snd}),
  apply:(c)=>{if(!c)return;const u=new Set([...(st.d||[]),...(c.d||[])].filter(x=>Number.isInteger(x)&&x>=0&&x<30));st.d=[...u];
-  if(c.name&&!st.n)st.n=c.name;if(Number.isInteger(c.off)&&!st.off)st.off=c.off;if(c.plan&&!st.plan)st.plan=c.plan;if(c.t)st.t=Object.assign({},c.t,st.t||{});if(c.p&&(!st.d.length||(c.d||[]).length>=st.d.length)){st.p=c.p==="ess"?"ess":"full";DAYS=st.p==="ess"?ESS:FULL}if(c.share===false)st.share=false;if(c._priv){if(c._priv.anon!=null)st.anon=!!c._priv.anon;st.notes=Object.assign({},c._priv.notes||{},st.notes||{});if(c._priv.nt)st.nt=Object.assign(st.nt||{},c._priv.nt);if(c._priv.snd!=null&&st.snd==null)st.snd=c._priv.snd}setStart();
+  if(c.name&&!st.n)st.n=c.name;if(Number.isInteger(c.off)&&!st.off)st.off=c.off;if(c.plan&&!st.plan)st.plan=c.plan;if(c.t)st.t=Object.assign({},c.t,st.t||{});const newer=(+c.pu||0)>(+st.pu||0);if(c._priv)st.notes=Object.assign({},c._priv.notes||{},st.notes||{});if(newer){if(c.name)st.n=c.name;if(c.p){st.p=c.p==="ess"?"ess":"full";DAYS=st.p==="ess"?ESS:FULL}st.share=c.share!==false;if(c._priv){if(c._priv.anon!=null)st.anon=!!c._priv.anon;if(c._priv.nt)st.nt=Object.assign({},st.nt||{},c._priv.nt);if(c._priv.snd!=null)st.snd=!!c._priv.snd}if(Number.isInteger(c.off))st.off=c.off;st.pu=+c.pu}setStart();
   try{localStorage.setItem(K,JSON.stringify(st))}catch(e){}
-  if(c.skin&&["playful","basic","refined","star"].includes(c.skin)&&c.skin!==skin){skin=c.skin;try{localStorage.setItem(SK,skin)}catch(e){}document.documentElement.dataset.skin=skin}
+  if(newer&&c.skin&&["playful","basic","refined","star"].includes(c.skin)&&c.skin!==skin){skin=c.skin;try{localStorage.setItem(SK,skin)}catch(e){}document.documentElement.dataset.skin=skin}
   $("nm").value=st.n;render();if(view==="fam")renderFam();if(view==="home")renderDash()},
  changed:()=>{renderAcct();if(view==="fam")renderFam();if(view==="home")renderDash();if(view==="feed")renderFeed();syncPush()},
  members:()=>{if(view==="fam")renderFam();if(view==="home")renderDash()},
@@ -2300,10 +2300,11 @@ const slug=n=>n.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[
 const email=n=>`${slug(n)||"x"}@nt30.family`;
 let cur=null,members=[],feed=[],unsub=[],timer=null,admin=false,vapid=null,adminUid=null;const ADMIN_EMAIL="shantzhansen@nt30.family";
 const push=async()=>{if(!cur)return;const g=window.NT.get();try{
- await F.setDoc(F.doc(db,"members",cur.uid),{name:(g.n||cur.name||"").slice(0,40),user:cur.user||"",d:g.d,off:g.off||0,plan:g.plan||null,skin:g.skin,p:g.p||"full",t:g.t||{},share:g.share!==false,updated:F.serverTimestamp()},{merge:true});
+ await F.setDoc(F.doc(db,"members",cur.uid),{name:(g.n||cur.name||"").slice(0,40),user:cur.user||"",d:g.d,off:g.off||0,plan:g.plan||null,skin:g.skin,pu:g.pu||0,p:g.p||"full",t:g.t||{},share:g.share!==false,updated:F.serverTimestamp()},{merge:true});
  await F.setDoc(F.doc(db,"members",cur.uid,"private","me"),{notes:g.notes||{},nt:g.nt||{},snd:!!g.snd,anon:!!g.anon},{merge:true});
 }catch(e){console.warn("[nt30] save failed",e)}};
-window.addEventListener("nt30:save",()=>{clearTimeout(timer);timer=setTimeout(push,800)});
+window.addEventListener("nt30:save",()=>{clearTimeout(timer);timer=setTimeout(push,600)});
+const flush=()=>{if(timer){clearTimeout(timer);timer=null;push()}};document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")flush()});window.addEventListener("pagehide",flush);
 const stop=()=>{unsub.forEach(f=>{try{f()}catch(e){}});unsub=[]};
 A.onAuthStateChanged(auth,async u=>{
  stop();members=[];feed=[];admin=false;
