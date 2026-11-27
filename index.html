@@ -997,6 +997,13 @@ body{padding-bottom:calc(74px + env(safe-area-inset-bottom))}
 .sprite .who{animation-duration:3.4s}
 .sprite.t-hop .who .eyes,.sprite.t-spin .who .eyes{animation:blink .4s 2}
 .tile:active .ti svg{animation:navpop .4s var(--spring)}
+.sheet{--shbg:#fff}[data-skin=refined] .sheet{--shbg:#f8f1e1}[data-skin=star] .sheet{--shbg:#252f68}
+.sbar{position:sticky;top:-10px;z-index:5;margin:-10px -18px 8px;padding:10px 18px 8px;background:var(--shbg);display:flex;justify-content:center;align-items:center;min-height:46px}
+.sbar .grab{margin:0}
+.xbtn{position:absolute;right:12px;top:7px;display:inline-flex;align-items:center;gap:5px;border:0;background:var(--blue2);color:var(--blue);font:800 14.5px Nunito,sans-serif;border-radius:99px;padding:7px 12px 7px 14px;cursor:pointer;min-height:36px}
+.xbtn svg{width:15px;height:15px}
+[data-skin=star] .xbtn{color:var(--gold);font-family:Quicksand,sans-serif}
+[data-skin=refined] .xbtn{border-radius:4px;font-family:"EB Garamond",serif;font-size:15.5px;color:#7a2e2e;background:transparent;border:1px solid #c9b083}
 /* help */
 #vhelp .card details+details{margin-top:4px}
 #vhelp .card p,#vhelp .card li{font-weight:700;font-size:14.5px;line-height:1.45}
@@ -2015,6 +2022,15 @@ function playSig(root,done){
   p.animate([{strokeDashoffset:L},{strokeDashoffset:0}],{duration:dur*1000,delay:t*1000,easing:"ease-in-out",fill:"forwards"});t+=dur+.06});
  setTimeout(()=>{const pr=root.querySelector("#sigpr");if(pr)pr.classList.add("on");done&&done()},fast?0:(t+.2)*1000);
 }
+
+/* ---------- sheet close bar ---------- */
+{const S=$("sheet");const fix=()=>{const g=S.querySelector(":scope > .grab");if(!g||S.querySelector(":scope > .sbar"))return;
+ const bar=document.createElement("div");bar.className="sbar";bar.innerHTML=`<span class="grab"></span><button class="xbtn" type="button" aria-label="Close">Done<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button>`;
+ g.replaceWith(bar);bar.querySelector(".xbtn").onclick=closeSheet;
+ let y0=null,dy=0;bar.addEventListener("touchstart",e=>{y0=e.touches[0].clientY;dy=0;S.style.transition="none"},{passive:true});
+ bar.addEventListener("touchmove",e=>{if(y0==null)return;dy=Math.max(0,e.touches[0].clientY-y0);S.style.transform=`translateY(${dy}px)`},{passive:true});
+ bar.addEventListener("touchend",()=>{S.style.transition="";S.style.transform="";if(dy>80)closeSheet();y0=null})};
+ new MutationObserver(fix).observe(S,{childList:true});}
 
 /* ---------- admin ---------- */
 const VBADGE='<svg class="vb" viewBox="0 0 24 24" aria-label="Creator of the app"><title>Creator of the app</title><path d="M12 1.8l2.4 1.9 3-.3 1 2.9 2.7 1.4-.6 3 1.6 2.6-2.2 2.1-.1 3.1-3 .6-1.8 2.5-2.9-1.1-2.9 1.1-1.8-2.5-3-.6-.1-3.1L1.9 13l1.6-2.6-.6-3 2.7-1.4 1-2.9 3 .3z" fill="#2f8ce5"/><path d="M7.6 12.2l3 3 5.8-6" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
