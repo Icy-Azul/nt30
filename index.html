@@ -1075,6 +1075,25 @@ body{padding-bottom:calc(92px + env(safe-area-inset-bottom))!important}
 [data-skin=star] .hero{min-height:318px}
 .sb{transition:opacity .22s ease,transform .22s ease}
 .sb.sbout{opacity:0;transform:translateY(6px) scale(.97)}
+/* ---- big "read in Gospel Library" buttons ---- */
+.readbtns{display:grid;gap:10px;margin:14px 0 12px}
+.rbtn{position:relative;display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--ink);background:var(--card);border:2px solid var(--c,var(--blue));border-radius:18px;padding:12px 14px;box-shadow:0 4px 0 var(--d,var(--blued));animation:rbin .4s var(--spring) both;transition:transform .08s,box-shadow .08s}
+.rbtn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--d,var(--blued))}
+@keyframes rbin{from{opacity:0;transform:translateY(8px)}}
+.rbtn .ri{flex:none;width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:var(--c,var(--blue));color:#fff}
+.rbtn .ri svg{width:26px;height:26px}
+.rbtn .rt{flex:1;min-width:0;display:flex;flex-direction:column}
+.rbtn .rt small{font-size:11.5px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;color:var(--mute)}
+.rbtn .rt b{font:700 20px/1.15 Fredoka,sans-serif}
+.rbtn .rt em{font-style:normal;font-weight:800;font-size:13.5px;color:var(--c,var(--blue))}
+.rbtn .ra{flex:none;width:30px;height:30px;color:var(--c,var(--blue))}
+.rbtn .ra svg{width:100%;height:100%}
+.rbtn:after{content:"";position:absolute;inset:-2px;border-radius:18px;border:2px solid var(--c,var(--blue));opacity:0;animation:rbpulse 2.6s ease-out 1s infinite;pointer-events:none}
+@keyframes rbpulse{0%{opacity:.5;transform:scale(1)}70%,100%{opacity:0;transform:scale(1.05)}}
+.sheet .hint{margin:-2px 0 14px!important}
+[data-skin=star] .rbtn{background:rgba(255,255,255,.07);border-width:1px;box-shadow:0 0 22px -6px var(--c)}[data-skin=star] .rbtn .ri{color:#141a3d}[data-skin=star] .rbtn .rt b{font-family:Fraunces,serif;font-weight:500}
+[data-skin=refined] .rbtn{border-radius:6px;border-width:1px;background:#fbf4e4}[data-skin=refined] .rbtn .ri{border-radius:50%}[data-skin=refined] .rbtn .rt b{font-family:"Cormorant Garamond",serif;font-size:22px}[data-skin=refined] .rbtn:after{border-radius:6px}
+[data-skin=basic] .rbtn{box-shadow:none;border-width:1.5px}[data-skin=basic] .rbtn .rt b{font-family:Inter,sans-serif;font-weight:600;font-size:18px}
 /* help */
 #vhelp .card details+details{margin-top:4px}
 #vhelp .card p,#vhelp .card li{font-weight:700;font-size:14.5px;line-height:1.45}
@@ -1695,8 +1714,8 @@ function openSheet(i){
  park();const s=$("sheet");s.style.setProperty("--c",cc[0]);s.style.setProperty("--d",cc[1]);
  s.innerHTML=`<div class="grab"></div><div class="meta"><span>${skin==="refined"?"Part "+ROMAN(ux+1)+" · Day "+ROMAN(i+1):u.n+" · Day "+(i+1)} · ${fmt(dateFor(i))}</span>${pill}</div>
   <h2 id="shT">${esc(d.t)}</h2>${hlFor(i)?`<p class="note" style="margin:2px 0 0;font-size:14.5px">${esc(hlFor(i))}</p>`:""}
-  <div class="chips">${d.l.map(c=>`<a class="chip" href="${c[1]}" target="_blank" rel="noopener">${esc(c[0])} ${ARR}</a>`).join("")}</div>
-  ${d.l.length>1?`<p class="hint">Read all of these books today.</p>`:""}
+  <div class="readbtns">${d.l.map((c,k)=>`<a class="rbtn" href="${c[1]}" target="_blank" rel="noopener" style="animation-delay:${k*80}ms"><span class="ri">${ICON.book}</span><span class="rt"><small>${d.l.length>1?`Part ${k+1} of ${d.l.length}`:(dn?"Read it again":"Today's reading")}</small><b>${esc(d.l.length>1?c[0]:d.t)}</b><em>Tap to read in Gospel Library</em></span><span class="ra">${ARR}</span></a>`).join("")}</div>
+  <p class="hint">${d.l.length>1?"Read all of these, then":"When you finish,"} come back here and tap <b>I read it!</b></p>
   ${dn?`<button class="btn" id="shT2">Write down some thoughts</button><button class="btn ghost" id="shB" style="margin-top:10px">Mark as not read</button>`:`<button class="btn" id="shB">I read it!</button>`}`;
  $("shB").onclick=()=>{dn?unmark(i):complete(i)};if(dn)$("shT2").onclick=()=>{closeSheet();setTimeout(()=>openThought(i),320)};
  $("scrim").classList.add("show");s.classList.add("show");
@@ -2110,7 +2129,7 @@ document.documentElement.classList.toggle("duo",duoOn());
 ["gesturestart","gesturechange"].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
 document.addEventListener("touchmove",e=>{if(e.touches&&e.touches.length>1)e.preventDefault()},{passive:false});
 /* ---------- stay up to date ---------- */
-const BUILD="1795818324";
+const BUILD="1795818566";
 async function checkUpdate(){if(location.protocol!=="https:"||BUILD.startsWith("__"))return;try{const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"});if(!r.ok)return;const v=(await r.json()).v;
  if(v&&v!==BUILD){let tried="";try{tried=sessionStorage.getItem("nt30-upd")||""}catch(e){}if(tried===v)return;try{sessionStorage.setItem("nt30-upd",v)}catch(e){}save();setTimeout(()=>location.reload(),400)}}catch(e){}}
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")checkUpdate()});setTimeout(checkUpdate,1500);
