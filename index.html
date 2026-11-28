@@ -1363,6 +1363,7 @@ details.gl9 .rbtn{min-height:0;padding:10px 12px}details.gl9 .rbtn .ri{display:n
 .rdr.pages .rbody{position:absolute;top:var(--rtop,64px);bottom:calc(52px + env(safe-area-inset-bottom));left:0;right:0;max-width:none;margin:0;padding:12px 24px 0;column-width:calc(100vw - 48px);column-gap:48px;column-fill:auto;overflow:hidden;background:var(--rbg)}
 .rdr.pages .rch{padding-top:0}.rdr.pages .rch:first-child .rcht{margin-top:2px}
 .rdr.pages .rfin,.rdr.pages .rpn{break-inside:avoid}
+.rdr.pages .rcunder{position:absolute;top:var(--rtop,64px);bottom:calc(52px + env(safe-area-inset-bottom));left:0;right:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,rgba(0,0,0,.28),rgba(0,0,0,.06) 40%,transparent 75%);opacity:0}.rdr.book .rcunder{left:50%}
 .rdr.pages .rcurl{position:absolute;top:var(--rtop,64px);bottom:calc(52px + env(safe-area-inset-bottom));left:0;right:0;margin:0;padding:12px 24px 0;column-width:calc(100vw - 48px);column-gap:48px;column-fill:auto;overflow:hidden;background:var(--rbg);z-index:2;pointer-events:none;box-shadow:6px 0 22px rgba(0,0,0,.18);backface-visibility:hidden;will-change:transform}
 .rcshade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,0) 40%,rgba(0,0,0,.25) 85%,rgba(255,255,255,.35) 100%);opacity:0;pointer-events:none}
 .rdr.pages .rpager{display:flex;position:absolute;left:0;right:0;bottom:0;height:calc(52px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);align-items:center;justify-content:space-between;gap:8px;padding-left:10px;padding-right:10px;font:600 12.5px var(--f-sans);color:var(--rmute);background:var(--rbg);border-top:1px solid var(--rline);z-index:3}
@@ -1658,6 +1659,8 @@ html[data-skin=refined] .iart{filter:none;opacity:1}
 .iart:active,.iart.tap{opacity:1!important;filter:none!important}
 .iart em{opacity:.85}
 .illdust i:nth-child(2n){display:none}.illdust{opacity:.6}
+.irow:has(.imed.cur) .itx{width:calc(50% - 70px)}.irow.L:has(.imed.cur) .itx{right:calc(50% + 64px)!important}.irow.R:has(.imed.cur) .itx{left:calc(50% + 64px)!important}
+.irow.L .itx{right:calc(50% + 48px)}.irow.R .itx{left:calc(50% + 48px)}
 html[data-skin=refined] body{background:#e2cc9b url(art/journey3.webp) center top/100% auto repeat-y!important}html,body{overflow-x:clip!important}.bnav{transform:translateZ(0);-webkit-transform:translateZ(0);will-change:transform}html.duo .bnav{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}html[data-skin=refined] #illbg{display:none!important}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
 </style></head><body>
@@ -2634,7 +2637,7 @@ document.documentElement.classList.toggle("duo",duoOn());
 ["gesturestart","gesturechange"].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
 document.addEventListener("touchmove",e=>{if(e.touches&&e.touches.length>1)e.preventDefault()},{passive:false});
 /* ---------- stay up to date ---------- */
-const BUILD="1795830362";
+const BUILD="1795831005";
 async function checkUpdate(){if(location.protocol!=="https:"||BUILD.startsWith("__"))return;try{const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"});if(!r.ok)return;const v=(await r.json()).v;
  if(v&&v!==BUILD){let tried="";try{tried=sessionStorage.getItem("nt30-upd")||""}catch(e){}if(tried===v)return;try{sessionStorage.setItem("nt30-upd",v)}catch(e){}save();setTimeout(()=>location.reload(),400)}}catch(e){}}
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")checkUpdate()});setTimeout(checkUpdate,1500);
@@ -3236,17 +3239,25 @@ function goPage(n,anim){if(!PM())return;const B=$("rbody");n=Math.max(0,Math.min
  updPager();afterPage();if(anim)sfx("page")}
 function pageCurl(dir,from,to){
  const B=$("rbody"),book=bookMode();
- const mk=pg=>{const c=B.cloneNode(true);c.removeAttribute("id");c.querySelectorAll("[id]").forEach(e=>e.removeAttribute("id"));c.classList.add("rcurl");RDR.appendChild(c);c.scrollLeft=pg*PG.step;return c};
+ const mk=pg=>{const c=B.cloneNode(true);c.removeAttribute("id");c.querySelectorAll("[id]").forEach(e=>e.removeAttribute("id"));c.classList.add("rcurl");c.style.visibility="hidden";RDR.appendChild(c);void c.offsetWidth;c.scrollLeft=pg*PG.step;return c};
  const shade=c=>{const s=document.createElement("i");s.className="rcshade";c.appendChild(s);return s};
- const ease="cubic-bezier(.45,.05,.3,1)",dur=book?620:560;
- if(dir>0){const c=mk(from);B.scrollLeft=to*PG.step;
+ const under=()=>{const u=document.createElement("i");u.className="rcunder";RDR.appendChild(u);return u};
+ const ease="cubic-bezier(.42,.08,.3,1)",dur=book?660:600,P="perspective(1400px)";
+ const go=f=>requestAnimationFrame(()=>requestAnimationFrame(f));
+ if(dir>0){const c=mk(from);
   if(book){c.style.clipPath="inset(0 0 0 50%)";c.style.transformOrigin="50% 50%"}else c.style.transformOrigin="0% 50%";
-  const sh=shade(c);sh.animate([{opacity:0},{opacity:.55}],{duration:dur,easing:ease,fill:"forwards"});
-  c.animate([{transform:"perspective(1800px) rotateY(0deg)",filter:"brightness(1)"},{transform:`perspective(1800px) rotateY(${book?-92:-75}deg) translateX(${book?0:-6}%)`,filter:"brightness(.82)",offset:.85},{transform:`perspective(1800px) rotateY(${book?-100:-95}deg)`,opacity:0}],{duration:dur,easing:ease}).onfinish=()=>c.remove()}
+  const sh=shade(c),u=under();
+  go(()=>{c.scrollLeft=from*PG.step;c.style.visibility="";B.scrollLeft=to*PG.step;
+   u.animate([{opacity:.6},{opacity:0}],{duration:dur,easing:ease,fill:"forwards"}).onfinish=()=>u.remove();
+   sh.animate([{opacity:0},{opacity:.5}],{duration:dur,easing:ease,fill:"forwards"});
+   c.animate([{transform:`${P} rotateY(0deg)`},{transform:`${P} rotateY(${book?-90:-89}deg)`}],{duration:dur,easing:ease,fill:"forwards"}).onfinish=()=>c.remove()})}
  else{const c=mk(to);
   if(book){c.style.clipPath="inset(0 50% 0 0)";c.style.transformOrigin="50% 50%"}else c.style.transformOrigin="0% 50%";
-  const sh=shade(c);sh.animate([{opacity:.55},{opacity:0}],{duration:dur,easing:ease,fill:"forwards"});
-  c.animate([{transform:`perspective(1800px) rotateY(${book?100:-95}deg)`,opacity:0},{transform:`perspective(1800px) rotateY(${book?80:-70}deg)`,opacity:1,offset:.12},{transform:"perspective(1800px) rotateY(0deg)",opacity:1}],{duration:dur,easing:ease}).onfinish=()=>{B.scrollLeft=to*PG.step;c.remove()}}
+  const sh=shade(c),u=under();
+  go(()=>{c.scrollLeft=to*PG.step;c.style.visibility="";
+   u.animate([{opacity:0},{opacity:.6}],{duration:dur,easing:ease,fill:"forwards"}).onfinish=()=>u.remove();
+   sh.animate([{opacity:.5},{opacity:0}],{duration:dur,easing:ease,fill:"forwards"});
+   c.animate([{transform:`${P} rotateY(${book?90:-89}deg)`},{transform:`${P} rotateY(0deg)`}],{duration:dur,easing:ease,fill:"forwards"}).onfinish=()=>{B.scrollLeft=to*PG.step;requestAnimationFrame(()=>c.remove())}})}
 }
 (function(){let sx=0,sy=0,st0=0,on=false;
  RDR.addEventListener("touchstart",e=>{if(!PM()||e.touches.length!==1)return;on=true;sx=e.touches[0].clientX;sy=e.touches[0].clientY;st0=Date.now()},{passive:true});
@@ -3279,10 +3290,10 @@ const ABY={};ART10.a.forEach(a=>ABY[a.id]=a);
 const ROM=n=>{const v=[[10,"X"],[9,"IX"],[5,"V"],[4,"IV"],[1,"I"]];let r="";for(const [a,s] of v)while(n>=a){r+=s;n-=a}return r};
 /* ---- hero arch ---- */
 const DIALH=`<div class="dial" id="dial9" role="img" aria-label="Bronze calendar dial"><div class="dl"><img src="art/dial_plate.webp" alt=""></div><div class="dl sh g g1"><img src="art/dial_g1.webp" alt=""></div><div class="dl sh g g2"><img src="art/dial_g2.webp" alt=""></div><div class="dl sh w"><img src="art/dial_wheel.webp" alt=""></div><div class="dl sh p"><img src="art/dial_pointer.webp" alt=""></div><div class="dl sh"><img src="art/dial_pin.webp" alt=""></div></div><div class="dialcap"><b id="dialD"></b><span id="dialM"></span></div>`;
-function dialDay(){const df=typeof diffDays==="function"?diffDays():0;return df<0?-1:Math.min(29,curIdx())}
-function dialSet(spin){const d=$("dial9");if(!d)return;const i=dialDay(),base=(Math.max(0,i))*12;
+function dialDay(){const df=typeof diffDays==="function"?diffDays():0;return df<0?-1:df>29?30:df}
+function dialSet(spin){const d=$("dial9");if(!d)return;const i=dialDay(),base=(Math.min(29,Math.max(0,i)))*12;
  d._turns=(d._turns||0)+(spin?1:0);d.style.setProperty("--a",(base+d._turns*360)+"deg");
- const D=$("dialD"),M=$("dialM");if(D)D.textContent=i<0?"Ante Diem":"Dies "+ROM(i+1);if(M)M.textContent=i<0?"Begins December 1":"December"}
+ const D=$("dialD"),M=$("dialM");if(D)D.textContent=i<0?"Ante Diem":i>29?"Finis":"Dies "+ROM(i+1);if(M)M.textContent=i<0?"Begins December 1":i>29?"December 1 – 30":"December"}
 function heroRefined(){const a=document.querySelector(".art-r");if(!a)return;if(!a._ill){a._ill=1;a.innerHTML=DIALH;
  a.addEventListener("click",()=>{const d=$("dial9");if(!d)return;sfx("tap");if(!reduceMo()){d.classList.remove("spin");void d.offsetWidth;d.classList.add("spin");clearTimeout(d._t);d._t=setTimeout(()=>d.classList.remove("spin"),2400)}dialSet(true);const r=d.getBoundingClientRect();gburst(r.left+r.width/2,r.top+r.height/2,14)})}
  dialSet(false)}
