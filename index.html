@@ -1663,6 +1663,30 @@ html[data-skin=refined] .iart{filter:none;opacity:1}
 .irow.L .itx{right:calc(50% + 48px)}.irow.R .itx{left:calc(50% + 48px)}
 html[data-skin=refined] body{background:#e2cc9b url(art/journey3.webp) center top/100% auto repeat-y!important}html,body{overflow-x:clip!important}.bnav{transform:translateZ(0);-webkit-transform:translateZ(0);will-change:transform}html.duo .bnav{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}html[data-skin=refined] #illbg{display:none!important}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+
+/* ===== iPhone-style grouped settings ===== */
+.sx #sxmain h2{margin:4px 0 14px}
+.sx .sx-h{margin:22px 4px 6px;font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);font-weight:700}
+.sx .sx-g{background:var(--card);border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px var(--line)}
+.sx .sx-f{margin:7px 6px 0;font-size:13px;line-height:1.4;color:var(--mute)}.sx .sx-f:empty{display:none}
+.sx .sx-g>.tg,.sx .sx-r{display:flex;align-items:center;gap:12px;width:100%;min-height:52px;padding:10px 14px;margin:0;border:0;border-radius:0;background:none;text-align:left;color:var(--ink);font:inherit;position:relative;cursor:pointer}
+.sx .sx-g>*+*:before{content:"";position:absolute;top:0;left:14px;right:0;height:1px;background:var(--line)}
+.sx .sx-g>.tg>div{flex:1}.sx .sx-g>.tg b,.sx .sx-l{font-weight:600;font-size:16px}
+.sx .sx-g>.tg small,.sx .sx-l small{display:block;font-weight:400;font-size:12.5px;color:var(--mute);line-height:1.3;margin-top:1px}
+.sx .sx-l{flex:1}.sx .sx-v{color:var(--mute);font-size:15px}
+.sx .sx-ch{width:8px;height:8px;border:solid var(--mute);border-width:2px 2px 0 0;transform:rotate(45deg);opacity:.6;flex:none;margin-right:2px}
+.sx .sx-r:active{background:var(--gray)}.sx .sx-r:disabled{opacity:.5}
+.sx .sx-red .sx-l{color:var(--corald)}.sx .sx-red .sx-ch{display:none}
+.sx .sx-sel select{font:inherit;font-size:15px;color:var(--ink);background:var(--gray);border:0;border-radius:8px;padding:6px 8px}
+.sx .sx-prof{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border:0;border-radius:14px;background:var(--card);box-shadow:0 0 0 1px var(--line);text-align:left;color:var(--ink);font:inherit;cursor:pointer}
+.sx .sx-prof .av{width:48px;height:48px;font-size:21px;flex:none;display:grid;place-items:center;border-radius:50%;color:#fff;font-weight:800;line-height:1}
+.sx .sx-gap{margin-top:22px}.sx .sx-prof b{font-size:18px}
+.sx .sx-pick .sx-ck{width:20px;height:20px;flex:none}.sx .sx-pick[aria-pressed=true] .sx-ck{background:var(--blue);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/18px no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/18px no-repeat}
+.sx .sx-back{border:0;background:none;color:var(--blue);font:inherit;font-weight:700;font-size:16px;padding:4px 0;cursor:pointer}
+.sx .sx-t{margin:6px 0 14px}
+.sx .sx-pane>.card,.sx .sx-pane>section{margin-top:0}
+.sx .sx-pane details>summary{display:none}
+.sx .expb{margin-left:6px}
 </style></head><body>
 <div class="wrap">
  <header class="top">
@@ -2584,25 +2608,39 @@ if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceW
 /* ---------- settings extras ---------- */
 function tgl(id,on,label,small){return `<div class="tg"><div><b>${label}</b><small>${small}</small></div><button class="sw2" role="switch" id="${id}" aria-checked="${!!on}" aria-label="${label}"></button></div>`}
 function renderPrefs(){
- const P=$("prefs");if(!P)return;
+ const M=$("sxmain");if(!M)return;const c=cloud(),me=c&&c.user();
  const times=["06:00","07:00","08:00","09:00","12:00","17:00","18:00","19:00","20:00","21:00","22:00"].map(t=>{const [h]=t.split(":").map(Number);return `<option value="${t}"${st.nt.time===t?" selected":""}>${(h%12||12)}:00 ${h<12?"AM":"PM"}</option>`}).join("");
  const canPush=pushOK()&&(!isIOS()||standalone());
- P.innerHTML=`<p class="sec" style="margin-top:0">Reading path</p><div class="seg"><button data-p="full" aria-pressed="${st.p!=="ess"}"><b>Full</b><small>All 260 chapters, about 9 a day</small></button><button data-p="ess" aria-pressed="${st.p==="ess"}"><b>Essentials</b><small>89 key chapters, about 3 a day</small></button></div>
-  <p class="nmsg">Switching keeps the days you've already checked off.</p>
-  <p class="sec">Privacy</p>${tgl("tshare",st.share!==false,"Share my progress","Show me on the People tab and post when I finish a reading")}${tgl("tanon",!!st.anon,"Post anonymously","Show \"Anonymous\" instead of your name in the feed, including past posts")}
-  <p class="sec">Notifications</p>
-  ${st.nt.on?tgl("tremind",st.nt.remind,"Daily reminder","If you haven't read yet")+(st.nt.remind?`<div class="tg"><div><b>Reminder time</b><small>Your local time</small></div><select id="ttime">${times}</select></div>`:"")+tgl("tothers",st.nt.others,"When others finish","When someone finishes a reading or shares a thought")+`<button class="link" id="toff" style="padding:8px 0 0">Turn off all notifications</button>`
-   :`<p class="note" style="margin-top:4px">${canPush?"Get a daily reminder and see when others read.":isIOS()?"Add this app to your Home Screen, open it from there, then turn on notifications here.":"Get a daily reminder and see when others read."}</p><button class="btn ghost" id="ton" style="margin-top:10px"${canPush||!isIOS()?"":" disabled"}>${ICON.bell.replace("<svg",'<svg style="width:20px;height:20px;vertical-align:-4px;margin-right:6px"')}Turn on notifications</button>`}
-  <p class="nmsg" id="tmsg"></p>
-  <p class="sec">Sounds</p>${tgl("tsnd",st.snd,"Sound effects","Little chimes when you finish a reading")}
-  <details class="exp" style="margin-top:14px"${duoOn()?" open":""}><summary>Experimental</summary>${tgl("tduo",duoOn(),'iPhone Duo layout<span class="expb">Beta</span>',"For iPhone Duo when it's unfolded. Uses two columns and side panels on the big screen. Only on this phone.")}</details>`;
- P.querySelectorAll(".seg button").forEach(b=>b.onclick=()=>{setPath(b.dataset.p);renderPrefs();syncPush()});
+ const row=(id,l,v,cls="")=>`<button class="sx-r ${cls}" id="${id}" type="button"><span class="sx-l">${l}</span>${v!=null?`<span class="sx-v">${v}</span>`:""}<i class="sx-ch" aria-hidden="true"></i></button>`;
+ const g=(h,body,f)=>`${h?`<p class="sx-h">${h}</p>`:""}<div class="sx-g${h?"":" sx-gap"}">${body}</div>${f?`<p class="sx-f">${f}</p>`:""}`;
+ const th=(THEMES.find(t=>t.k===skinPref)||{}).n||"";
+ const nm=st.n||(me&&me.name)||"";
+ M.innerHTML=`<h2 id="shT">Settings</h2>
+  <button class="sx-prof" id="sxacct" type="button">${avatar(nm||"?")}<span class="sx-l"><b>${esc(nm||"Add your name")}</b><small>${me?(SYNC&&!SYNC.ok?"Signed in · will sync when online":"Signed in · progress saved"):"Not signed in · tap to sign in"}</small></span><i class="sx-ch" aria-hidden="true"></i></button>
+  ${g("Reading",row("sxplanr","Reading plan",st.p==="ess"?"Essentials":"Full")+row("sxtext","Text size, colors & fonts")+tgl("tcomm",st.rs.comm,"Community highlights","Faint underlines on verses others highlighted")+tgl("tlp",st.rs.lp!==false,"Progress in the Library","Green chapters when you read freely"))}
+  ${g("Privacy",tgl("tshare",st.share!==false,"Show my progress","Your checkmarks and streak on the People tab and Home")+tgl("tanon",!!st.anon,"Post anonymously","Your name on thoughts and shared highlights")+tgl("tmine",st.hlShare!==false,"Count my highlights","Adds to community highlight counts"),
+   "With <b>Show my progress</b> off, no one else can see your checkmarks or streak, and your automatic “finished a reading” posts are removed. Community highlight counts never show names.")}
+  ${g("Notifications",st.nt.on?tgl("tremind",st.nt.remind,"Daily reminder","If you haven't read yet")+(st.nt.remind?`<label class="tg sx-sel"><div><b>Reminder time</b><small>Your local time</small></div><select id="ttime">${times}</select></label>`:"")+tgl("tothers",st.nt.others,"When others read","Finished readings and shared thoughts")+row("toff","Turn off notifications",null,"sx-red")
+   :`<button class="sx-r" id="ton" type="button"${canPush||!isIOS()?"":" disabled"}><span class="sx-l">Turn on notifications</span><i class="sx-ch" aria-hidden="true"></i></button>`,
+   st.nt.on?"":canPush||!isIOS()?"Get a daily reminder and see when others read.":"Add this app to your Home Screen and open it from there to turn on notifications.")}
+  <p class="sx-f" id="tmsg"></p>
+  ${g("Appearance",row("sxthemer","Theme",th)+tgl("tsnd",st.snd,"Sound effects","Little chimes when you finish")+tgl("tduo",duoOn(),"iPhone Duo layout","Two columns on the unfolded screen. This phone only.").replace("<b>iPhone Duo layout</b>",'<b>iPhone Duo layout<span class="expb">Beta</span></b>'))}
+  ${g("Help",row("sxhome","Add to Home Screen")+row("sxtour","Welcome tour")+row("sxbk","Back up & restore"))}
+  ${g("",row("sxreset","Start over",null,"sx-red"))}`;
+ const on=(id,f)=>{const e=$(id);if(e)e.onclick=f};
+ on("sxacct",()=>{if(me)sxGo("acct");else{closeSheet();openAccount()}});
+ on("sxplanr",()=>sxGo("plan"));on("sxthemer",()=>sxGo("theme"));on("sxhome",()=>sxGo("home"));on("sxbk",()=>sxGo("backup"));on("sxreset",()=>sxGo("reset"));
+ on("sxtour",()=>$("tour").click());on("sxtext",()=>{closeSheet();setTimeout(openRS,320)});
  const sw=(id,f)=>{const e=$(id);if(e)e.onclick=()=>{const v=e.getAttribute("aria-checked")!=="true";e.setAttribute("aria-checked",v);f(v)}};
- sw("tduo",v=>{setDuo(v)});sw("tshare",v=>{st.share=v;save()});sw("tanon",v=>{st.anon=v;save();const c=cloud();if(c&&c.user())c.setAnon(v).then(()=>{$("tmsg").textContent=v?"Your posts now show as Anonymous.":"Your name is back on your posts."})});sw("tsnd",v=>{st.snd=v;save();if(v)sfx("tap")});
+ sw("tduo",v=>{setDuo(v)});
+ sw("tshare",v=>{st.share=v;save();const c2=cloud();if(!v&&c2&&c2.user()&&c2.hideDone)c2.hideDone().then(n=>{const t=$("tmsg");if(t)t.textContent=n?"Your progress is hidden, and your finished-reading posts were removed.":"Your progress is now hidden from others."}).catch(()=>{});else{const t=$("tmsg");if(t)t.textContent=v?"Others can see your progress again.":"Your progress is now hidden from others."}});
+ sw("tanon",v=>{st.anon=v;save();const c2=cloud();if(c2&&c2.user())c2.setAnon(v).then(()=>{const t=$("tmsg");if(t)t.textContent=v?"Your posts now show as Anonymous.":"Your name is back on your posts."})});
+ sw("tsnd",v=>{st.snd=v;save();if(v)sfx("tap")});
+ sw("tcomm",v=>{st.rs.comm=v;st.rsu=Date.now();applyRS();save9()});sw("tmine",v=>setHlShare(v));sw("tlp",v=>setLP(v));
  sw("tremind",v=>{st.nt.remind=v;save();syncPush();renderPrefs()});sw("tothers",v=>{st.nt.others=v;save();syncPush()});
  const tt=$("ttime");if(tt)tt.onchange=()=>{st.nt.time=tt.value;save();syncPush()};
- const on=$("ton");if(on)on.onclick=async()=>{on.disabled=true;const m=await enablePush().catch(e=>"Couldn't turn on notifications. "+(e&&e.message||""));$("tmsg").textContent=m;on.disabled=false;if(!m)renderPrefs()};
- const off=$("toff");if(off)off.onclick=async()=>{await disablePush();renderPrefs()};
+ const tn=$("ton");if(tn)tn.onclick=async()=>{tn.disabled=true;const m=await enablePush().catch(e=>"Couldn't turn on notifications. "+(e&&e.message||""));$("tmsg").textContent=m||"";tn.disabled=false;if(!m)renderPrefs()};
+ const tf=$("toff");if(tf)tf.onclick=async()=>{await disablePush();renderPrefs()};
 }
 
 /* ---------- home screen guide ---------- */
@@ -2637,7 +2675,7 @@ document.documentElement.classList.toggle("duo",duoOn());
 ["gesturestart","gesturechange"].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
 document.addEventListener("touchmove",e=>{if(e.touches&&e.touches.length>1)e.preventDefault()},{passive:false});
 /* ---------- stay up to date ---------- */
-const BUILD="1795831005";
+const BUILD="1795832389";
 async function checkUpdate(){if(location.protocol!=="https:"||BUILD.startsWith("__"))return;try{const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"});if(!r.ok)return;const v=(await r.json()).v;
  if(v&&v!==BUILD){let tried="";try{tried=sessionStorage.getItem("nt30-upd")||""}catch(e){}if(tried===v)return;try{sessionStorage.setItem("nt30-upd",v)}catch(e){}save();setTimeout(()=>location.reload(),400)}}catch(e){}}
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")checkUpdate()});setTimeout(checkUpdate,1500);
@@ -2846,15 +2884,30 @@ function startOnboarding(only){
 
 function openSettings(){
  park();const s=$("sheet");s.style.removeProperty("--c");s.style.removeProperty("--d");
- s.innerHTML=`<div class="grab"></div><h2 id="shT">Settings</h2><p class="sec">Theme</p>
-  <div class="themes">${THEMES.map(t=>`<button class="th" data-th="${t.k}" aria-pressed="${skinPref===t.k}"><span class="sw" style="background:${t.sw[0]}">${t.sw.slice(1).map(c=>`<i style="background:${c}"></i>`).join("")}</span><span><b>${t.n}</b><span>${t.d}</span></span><span class="ok"></span></button>`).join("")}</div>
-  `;
- s.appendChild($("setbody"));renderPrefs();renderRPrefs();
+ s.innerHTML=`<div class="grab"></div>`;const B=$("setbody");s.appendChild(B);sxInit();sxGo(null,true);renderAcct();renderPrefs();
  const dn=document.createElement("button");dn.className="btn";dn.id="sdone";dn.style.marginTop="18px";dn.textContent="Done";s.appendChild(dn);
- s.querySelectorAll(".th").forEach(b=>b.onclick=()=>{setSkin(b.dataset.th);s.querySelectorAll(".th").forEach(x=>x.setAttribute("aria-pressed",x===b))});
- $("sdone").onclick=closeSheet;
- $("scrim").classList.add("show");s.classList.add("show");
+ $("sdone").onclick=closeSheet;$("scrim").classList.add("show");s.classList.add("show");
 }
+function sxInit(){const B=$("setbody");if(B._sx)return;B._sx=1;B.classList.add("sx");
+ const main=document.createElement("div");main.id="sxmain";main.className="sx-main";B.prepend(main);
+ const pane=(p,t)=>{const d=document.createElement("div");d.className="sx-pane";d.dataset.p=p;d.hidden=true;d.innerHTML=`<button class="sx-back" type="button">‹ Settings</button><h2 class="sx-t">${t}</h2>`;B.appendChild(d);d.querySelector(".sx-back").onclick=()=>sxGo(null);return d};
+ const acct=pane("acct","Account");acct.appendChild($("acctcard"));const setc=$("nm").closest("section");acct.appendChild(setc);
+ const sl=document.createElement("p");sl.className="sx-f";sl.id="sxsync";acct.appendChild(sl);
+ pane("plan","Reading plan").insertAdjacentHTML("beforeend",`<div id="sxplan"></div>`);
+ pane("theme","Theme").insertAdjacentHTML("beforeend",`<div id="sxtheme"></div>`);
+ const home=pane("home","Add to Home Screen"),hs=$("help").closest("section");home.appendChild(hs);$("help").open=true;
+ const bk=pane("backup","Back up & restore"),bs=$("bk").closest("section");bk.appendChild(bs);$("bk").open=true;
+ const rs=pane("reset","Start over");rs.appendChild($("rs").closest(".sover"));
+ $("tour").closest(".sover").hidden=true;$("prefs").hidden=true;$("rprefs").hidden=true}
+function sxGo(p,instant){const B=$("setbody");if(!B)return;const main=$("sxmain");
+ B.querySelectorAll(".sx-pane").forEach(d=>d.hidden=d.dataset.p!==p);main.hidden=!!p;
+ if(p==="plan")sxPlan();if(p==="theme")sxTheme();if(p==="acct"){const e=$("sxsync");if(e)e.innerHTML=syncTxt()}
+ const sh=$("sheet");if(sh&&!instant)sh.scrollTop=0;
+ const cur=p?B.querySelector(`.sx-pane[data-p="${p}"]`):main;if(cur&&!instant&&!reduceMo())cur.animate([{transform:`translateX(${p?40:-40}px)`,opacity:0},{transform:"none",opacity:1}],{duration:260,easing:"cubic-bezier(.2,.8,.3,1)"})}
+function sxPlan(){const P=$("sxplan");if(!P)return;P.innerHTML=`<div class="sx-g">${[["full","Full New Testament","All 260 chapters, about 9 a day"],["ess","Essentials","89 key chapters, about 3 a day"]].map(([k,n,d])=>`<button class="sx-r sx-pick" data-p="${k}" aria-pressed="${(st.p==="ess")===(k==="ess")}"><span class="sx-l">${n}<small>${d}</small></span><i class="sx-ck"></i></button>`).join("")}</div><p class="sx-f">Switching keeps the days you've already checked off.</p>`;
+ P.querySelectorAll(".sx-pick").forEach(b=>b.onclick=()=>{setPath(b.dataset.p);syncPush();sxPlan();renderPrefs()})}
+function sxTheme(){const P=$("sxtheme");if(!P)return;P.innerHTML=`<div class="themes">${THEMES.map(t=>`<button class="th" data-th="${t.k}" aria-pressed="${skinPref===t.k}"><span class="sw" style="background:${t.sw[0]}">${t.sw.slice(1).map(c=>`<i style="background:${c}"></i>`).join("")}</span><span><b>${t.n}</b><span>${t.d}</span></span><span class="ok"></span></button>`).join("")}</div>`;
+ P.querySelectorAll(".th").forEach(b=>b.onclick=()=>{setSkin(b.dataset.th);P.querySelectorAll(".th").forEach(x=>x.setAttribute("aria-pressed",x===b));renderPrefs()})}
 $("gear").onclick=()=>{renderAcct();openSettings()};
 $("tour").onclick=()=>{closeSheet();startOnboarding()};
 {const comp=document.querySelector(".art-r");let rot=0;comp.setAttribute("role","button");comp.setAttribute("tabindex","0");comp.setAttribute("aria-label","Tap for a new verse");
@@ -3182,16 +3235,11 @@ document.addEventListener("click",e=>{const a=e.target.closest("[data-hlref]");i
 /* ---- settings card ---- */
 let SYNC=null;
 function syncTxt(){const c=cloud();if(!c||!c.user())return "Sign in to save your progress to your account.";if(!SYNC)return "Syncing…";return SYNC.ok?`${ICON.check} Everything is saved to your account`:"Saved on this phone. It will sync to your account when you're back online."}
-function renderRPrefs(){const P=$("rprefs");if(!P)return;
- P.innerHTML=`<p class="syncln" id="syncln">${syncTxt()}</p><p class="sec" style="margin-top:0">Reader</p>${tgl("tcomm",st.rs.comm,"Show community highlights","A faint underline on verses others have highlighted. Only counts are shown, never names.")}${tgl("tmine",st.hlShare,"Include my highlights in community highlights","Adds to the counts others see. Your name is never shown.")}${tgl("tlp",st.rs.lp!==false,"Show progress in the Library","Green chapters and progress bars when you read freely. Your daily tracker isn't affected.")}<button class="link" id="treader" style="padding:8px 0 0">Text size, colors and fonts</button>`;
- const sw=(id,f)=>{const e=$(id);e.onclick=()=>{const v=e.getAttribute("aria-checked")!=="true";e.setAttribute("aria-checked",v);f(v)}};
- sw("tcomm",v=>{st.rs.comm=v;st.rsu=Date.now();applyRS();save9()});sw("tmine",v=>setHlShare(v));sw("tlp",v=>setLP(v));
- $("treader").onclick=()=>{closeSheet();setTimeout(openRS,320)}}
-
+function renderRPrefs(){if($("sxmain"))renderPrefs()}
 /* ---- sync helpers (called from cloud module) ---- */
 window.NT9={get:()=>({hl:st.hl,rd:st.rd,pos:st.pos||null,rs:st.rs,rsu:st.rsu||0,hlShare:st.hlShare!==false,ux:st.ux}),
  own:uid=>{if(st.owner&&st.owner!==uid){st.d=[];st.t={};st.notes={};st.hl={};st.rd={};st.pos=null;st.plan=null;st.off=0;st.chlP={};st.pu=0;st.ux={app:0,gl:0};try{render();if(view==='home')renderDash()}catch(e){}}st.owner=uid;saveLocal()},
- synced:ok=>{SYNC={ok,at:Date.now()};const e=$("syncln");if(e)e.innerHTML=syncTxt()},
+ synced:ok=>{SYNC={ok,at:Date.now()};const e=$("sxsync");if(e)e.innerHTML=syncTxt()},
  flush:()=>{Object.keys(st.chlP||{}).forEach(pushChl)},
  counts:()=>({ra:st.ux.app||0,gl:st.ux.gl||0,hlc:myHlRefs().length,rdc:Object.keys(st.rd).length}),
  apply:d=>{if(!d)return;let ch=false;
@@ -3438,6 +3486,7 @@ window.NTCloud={ready:true,user:()=>cur,list:()=>{const me=cur&&cur.uid;const g=
  postDone:async(i,p,title,all)=>{if(!cur)return;const g=window.NT.get();if(g.share===false)return;
   try{await ev(`${cur.uid}_${p}_${i}`,{uid:cur.uid,...who(g,g.anon),type:"done",day:i,p,at:F.serverTimestamp(),hearts:[]})}catch(e){}
   if(all){try{await ev(`${cur.uid}_${p}_finish`,{uid:cur.uid,...who(g,g.anon),type:"finish",p,at:F.serverTimestamp(),hearts:[]})}catch(e){}}},
+ hideDone:async()=>{if(!cur)return 0;const q=await F.getDocs(F.query(F.collection(db,"feed"),F.where("uid","==",cur.uid)));let n=0;for(const x of q.docs){const t=x.data().type;if(t==="done"||t==="finish"){try{await F.deleteDoc(x.ref);n++}catch(e){}}}return n},
  undoDone:async(i,p)=>{if(!cur)return;try{await F.deleteDoc(F.doc(db,"feed",`${cur.uid}_${p}_${i}`))}catch(e){}try{await F.deleteDoc(F.doc(db,"feed",`${cur.uid}_${p}_finish`))}catch(e){}},
  postThought:async(i,text,anon)=>{const g=window.NT.get();await F.addDoc(F.collection(db,"feed"),{uid:cur.uid,...who(g,anon),type:"thought",day:i,p:g.p||"full",text:text.slice(0,1000),at:F.serverTimestamp(),hearts:[]})},
  editPost:(id,text)=>F.updateDoc(F.doc(db,"feed",id),{text:text.slice(0,1000),edited:true}),
