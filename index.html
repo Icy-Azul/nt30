@@ -2735,7 +2735,7 @@ document.documentElement.classList.toggle("duo",duoOn());
 ["gesturestart","gesturechange"].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
 document.addEventListener("touchmove",e=>{if(e.touches&&e.touches.length>1)e.preventDefault()},{passive:false});
 /* ---------- stay up to date ---------- */
-const BUILD="1795882785";
+const BUILD="1795883360";
 async function checkUpdate(){if(location.protocol!=="https:"||BUILD.startsWith("__"))return;try{const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"});if(!r.ok)return;const v=(await r.json()).v;
  if(v&&v!==BUILD){let tried="";try{tried=sessionStorage.getItem("nt30-upd")||""}catch(e){}if(tried===v)return;try{sessionStorage.setItem("nt30-upd",v)}catch(e){}save();setTimeout(()=>location.reload(),400)}}catch(e){}}
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")checkUpdate()});setTimeout(checkUpdate,1500);
@@ -3499,7 +3499,7 @@ function layoutPages(){
 
 /* ---- full screen reading: tuck away the header and footer ---- */
 {const btn=document.createElement("button");btn.className="rexit";btn.id="rexit";btn.setAttribute("aria-label","Show controls");btn.innerHTML=`<svg viewBox="0 0 24 24"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;RDR.appendChild(btn);
- const setImm=on=>{RDR.classList.toggle("imm",on);RDR.classList.remove("peek");try{localStorage.setItem("nt30-imm",on?"1":"0")}catch(e){}if(PM())setTimeout(relayoutKeep,320)};
+ const setImm=on=>{const a=anchorNow();ANCH={r:a,until:Date.now()+1500};RDR.classList.toggle("imm",on);RDR.classList.remove("peek");try{localStorage.setItem("nt30-imm",on?"1":"0")}catch(e){}const go=()=>{if(PM())relayoutKeep();else if(a){const el=$("v-"+a.replace(/\./g,"_"));if(el)RDR.scrollTop+=el.getBoundingClientRect().top-RDR.getBoundingClientRect().top-70}};requestAnimationFrame(go);setTimeout(go,120);setTimeout(go,340)};
  $("rfsb").onclick=()=>{setImm(true);toast("Full screen. Tap the corner button to bring the menus back.")};
  btn.onclick=()=>setImm(false);
  try{if(localStorage.getItem("nt30-imm")==="1")RDR.classList.add("imm")}catch(e){}
@@ -3507,8 +3507,9 @@ function layoutPages(){
  addEventListener("keydown",e=>{if(e.key==="f"&&!RDR.hidden&&!/input|textarea/i.test((document.activeElement||{}).tagName||""))setImm(!RDR.classList.contains("imm"))})}
 
 ["touchstart","wheel","keydown"].forEach(ev=>RDR.addEventListener(ev,e=>{if(RD&&RD._noSave&&(ev!=="keydown"||/Arrow|Page|Space/.test(e.key)))setTimeout(()=>{if(RD)RD._noSave=false},ev==="touchstart"?600:0)},{passive:true}));
-function relayoutKeep(){if(!PM()||RDR.hidden)return;const a=RD&&RD._noSave&&RD._target?RD._target:firstVisible();layoutPages();if(a){const el=$("v-"+a.replace(/\./g,"_"));if(el)goPage(pageOf(el),false)}}
-addEventListener("resize",()=>{if(!RDR.hidden){clearTimeout(relayoutKeep._t);relayoutKeep._t=setTimeout(()=>{const a=RD&&RD._noSave&&RD._target?RD._target:firstVisible();layoutPages();if(a&&PM()){const el=$("v-"+a.replace(/\./g,"_"));if(el)goPage(pageOf(el),false)}},150)}});
+let ANCH=null;function anchorNow(){if(ANCH&&Date.now()<ANCH.until&&ANCH.r)return ANCH.r;return RD&&RD._noSave&&RD._target?RD._target:firstVisible()}
+function relayoutKeep(){if(!PM()||RDR.hidden)return;const a=anchorNow();layoutPages();if(a){const el=$("v-"+a.replace(/\./g,"_"));if(el)goPage(pageOf(el),false)}}
+addEventListener("resize",()=>{if(!RDR.hidden){clearTimeout(relayoutKeep._t);relayoutKeep._t=setTimeout(()=>{const a=anchorNow();layoutPages();if(a&&PM()){const el=$("v-"+a.replace(/\./g,"_"));if(el)goPage(pageOf(el),false)}},150)}});
 function pageOf(el){const B=$("rbody"),x=el.getBoundingClientRect().left-B.getBoundingClientRect().left+B.scrollLeft;return Math.max(0,Math.min(PG.n-1,Math.floor((x+4)/PG.step)))}
 function updPager(){const t=$("rpgt");if(!t)return;let ch="";const a=firstVisible();if(a){const p=refParts(a);ch=" · "+chName(p.s,p.c)}t.textContent=`Page ${PG.i+1} of ${PG.n}${ch}`;$("rprog").style.width=((PG.i+1)/PG.n*100)+"%";
  pager.querySelector('[data-d="-1"]').disabled=PG.i<=0;pager.querySelector('[data-d="1"]').disabled=PG.i>=PG.n-1;
