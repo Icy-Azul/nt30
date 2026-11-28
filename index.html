@@ -1646,7 +1646,19 @@ html[data-skin=refined] .iart{filter:none;opacity:1}
 .asheet .ahero img.aphoto{max-width:86%;max-height:196px;object-fit:contain;animation:float9 6s ease-in-out infinite;filter:drop-shadow(5px 10px 8px rgba(50,28,8,.45))}
 .asheet .acred{font-size:11.5px;margin:10px 0 0;color:var(--ink2)}.asheet .acred a{color:inherit}
 @media(prefers-reduced-motion:reduce){.dial img{animation:none!important;transition:none!important}}
-html[data-skin=refined] body{background:#e2cc9b url(art/journey.webp) center top/100% auto repeat-y!important}html,body{overflow-x:clip!important}.bnav{transform:translateZ(0);-webkit-transform:translateZ(0);will-change:transform}html.duo .bnav{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}html[data-skin=refined] #illbg{display:none!important}
+
+/* ---- focus pass: buttons are the standout ---- */
+.ipath:after{content:"";position:absolute;left:50%;top:-20px;bottom:-20px;width:min(220px,60%);transform:translateX(-50%);z-index:-1;pointer-events:none;background:radial-gradient(closest-side,rgba(248,240,220,.55),rgba(248,240,220,.28) 60%,rgba(248,240,220,0)) center/100% 100% no-repeat;-webkit-mask:linear-gradient(transparent,#000 80px,#000 calc(100% - 80px),transparent);mask:linear-gradient(transparent,#000 80px,#000 calc(100% - 80px),transparent)}
+.imed{box-shadow:0 4px 0 #6b4c16,0 9px 18px rgba(50,25,5,.42),0 0 0 5px rgba(250,244,228,.95)!important}
+.imed>span{color:#2a1a0c}
+.imed.done>span{background:radial-gradient(circle at 35% 30%,#3f8f6c,#1f4d3b)!important;color:#f6e3a4}
+.imed.miss>span{background:radial-gradient(circle at 35% 30%,#f6e8cf,#e6d2ab)!important;color:#8a2f2a!important;box-shadow:inset 0 0 0 2.5px #9b3b35!important}
+.imed.cur{width:88px!important;height:88px!important;margin:-44px 0 0 -44px!important}
+.iart{width:min(100px,calc(50% - 60px))!important;opacity:.8!important;filter:saturate(.82)!important;transition:opacity .3s,filter .3s}
+.iart:active,.iart.tap{opacity:1!important;filter:none!important}
+.iart em{opacity:.85}
+.illdust i:nth-child(2n){display:none}.illdust{opacity:.6}
+html[data-skin=refined] body{background:#e2cc9b url(art/journey3.webp) center top/100% auto repeat-y!important}html,body{overflow-x:clip!important}.bnav{transform:translateZ(0);-webkit-transform:translateZ(0);will-change:transform}html.duo .bnav{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}html[data-skin=refined] #illbg{display:none!important}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
 </style></head><body>
 <div class="wrap">
@@ -2622,7 +2634,7 @@ document.documentElement.classList.toggle("duo",duoOn());
 ["gesturestart","gesturechange"].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
 document.addEventListener("touchmove",e=>{if(e.touches&&e.touches.length>1)e.preventDefault()},{passive:false});
 /* ---------- stay up to date ---------- */
-const BUILD="1795829880";
+const BUILD="1795830362";
 async function checkUpdate(){if(location.protocol!=="https:"||BUILD.startsWith("__"))return;try{const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"});if(!r.ok)return;const v=(await r.json()).v;
  if(v&&v!==BUILD){let tried="";try{tried=sessionStorage.getItem("nt30-upd")||""}catch(e){}if(tried===v)return;try{sessionStorage.setItem("nt30-upd",v)}catch(e){}save();setTimeout(()=>location.reload(),400)}}catch(e){}}
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")checkUpdate()});setTimeout(checkUpdate,1500);
