@@ -1,5 +1,5 @@
 // NT in 30 service worker: offline support + push notifications
-const CACHE = "nt30-v38", TEXT = "nt30-kjv-1";
+const CACHE = "nt30-v39", TEXT = "nt30-kjv-1";
 const CORE = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./apple-touch-icon.png", "./favicon.png"];
 self.addEventListener("install", e => { self.skipWaiting(); e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).catch(() => {})); });
 self.addEventListener("activate", e => { e.waitUntil((async () => { for (const k of await caches.keys()) if (k !== CACHE && k !== TEXT) await caches.delete(k); await self.clients.claim(); })()); });
