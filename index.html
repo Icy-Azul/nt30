@@ -1690,7 +1690,7 @@ html[data-skin=refined] body{background:#e2cc9b url(art/journey4.webp) center to
 .sx .sx-pane>.card,.sx .sx-pane>section{margin-top:0}
 .sx .sx-pane details>summary{display:none}
 .sx .expb{margin-left:6px}
-@media(min-width:700px){html.duo[data-skin=star] .hero .bubble,html.duo [data-skin=star] .hero .bubble{max-width:calc(50% - 24px)!important}}html[data-skin=refined] body{min-height:100vh;min-height:100dvh}html.duo .top:before{content:"";position:absolute;top:0;bottom:0;left:-100vw;right:-100vw;background:inherit;border-bottom-style:inherit;border-bottom-width:inherit;border-bottom-color:var(--line);box-shadow:inherit;z-index:-1;pointer-events:none}html.duo .top{border-bottom-color:transparent!important;box-shadow:none!important}.top,.bnav{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}[data-skin=star] .top{background:rgba(18,26,63,.96)!important}svg .tw:nth-of-type(n+14),svg .tw:nth-child(n+14),#sky i:nth-child(n+18){animation:none!important}.offs,.offs *{animation-play-state:paused!important}</style></head><body>
+@media(min-width:700px){html.duo[data-skin=star] .hero .bubble,html.duo [data-skin=star] .hero .bubble{max-width:calc(50% - 24px)!important}}html[data-skin=refined] body{min-height:100vh;min-height:100dvh}html.duo .top:before{content:"";position:absolute;top:0;bottom:0;left:-100vw;right:-100vw;background:inherit;border-bottom-style:inherit;border-bottom-width:inherit;border-bottom-color:var(--line);box-shadow:inherit;z-index:-1;pointer-events:none}html.duo .top{border-bottom-color:transparent!important;box-shadow:none!important}html[data-skin=refined] body .top{background:linear-gradient(180deg,rgba(231,214,175,.98) 72%,rgba(231,214,175,0))!important}html[data-skin=refined] .card,[data-skin=star] .bubble,.top,.bnav{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}[data-skin=star] .top{background:rgba(18,26,63,.96)!important}svg .tw:nth-of-type(n+14),svg .tw:nth-child(n+14),#sky i:nth-child(n+18){animation:none!important}.offs,.offs *{animation-play-state:paused!important}</style></head><body>
 <div class="wrap">
  <header class="top">
   <div class="stat fl" id="stk" title="Day streak"><svg viewBox="0 0 24 24"><path d="M12 2c1 4 6 6 6 12a6 6 0 01-12 0c0-3 1.5-5 3-6.5 0 2 1 3 2 3.5C10 8 11 5 12 2z" fill="#ff9600"/><path d="M12 12c1 2 3 3 3 5.5a3 3 0 01-6 0c0-1.5.8-2.6 1.6-3.3.2 1 .7 1.5 1.2 1.8-.2-1.4 0-2.7.2-4z" fill="#ffd34d"/></svg><b id="streak">0</b></div>
@@ -2678,7 +2678,7 @@ document.documentElement.classList.toggle("duo",duoOn());
 ["gesturestart","gesturechange"].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
 document.addEventListener("touchmove",e=>{if(e.touches&&e.touches.length>1)e.preventDefault()},{passive:false});
 /* ---------- stay up to date ---------- */
-const BUILD="1795837211";
+const BUILD="1795837554";
 async function checkUpdate(){if(location.protocol!=="https:"||BUILD.startsWith("__"))return;try{const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"});if(!r.ok)return;const v=(await r.json()).v;
  if(v&&v!==BUILD){let tried="";try{tried=sessionStorage.getItem("nt30-upd")||""}catch(e){}if(tried===v)return;try{sessionStorage.setItem("nt30-upd",v)}catch(e){}save();setTimeout(()=>location.reload(),400)}}catch(e){}}
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")checkUpdate()});setTimeout(checkUpdate,1500);
@@ -2906,7 +2906,7 @@ setTimeout(()=>{if(!cloud()&&!st.owner){const o=$("onb");if(o&&!o.hidden&&!GATE)
   else if(nav.style.top&&Math.abs(gap)<=3){/* already flush */}
   if(nav.style.top&&Math.abs(realH()-(window.innerHeight||0))<=2&&Math.abs((window.innerHeight||0)-nav.getBoundingClientRect().bottom)>3){nav.style.removeProperty("top");nav.style.removeProperty("bottom")}};
  const kick=()=>{if(!raf)raf=requestAnimationFrame(pin)};
- const burst=()=>{kick();[120,350,800,1600].forEach(t=>setTimeout(kick,t));try{window.scrollTo(window.scrollX,window.scrollY)}catch(e){}};
+ const nudge=()=>{try{const y=window.scrollY;window.scrollTo(window.scrollX,y+1);requestAnimationFrame(()=>window.scrollTo(window.scrollX,y))}catch(e){}};const burst=()=>{if(nav){nav.style.removeProperty("top");nav.style.removeProperty("bottom")}void document.body.offsetHeight;nudge();[250,600,1200,2000].forEach(t=>setTimeout(kick,t));setTimeout(nudge,400)};
  window.addEventListener("resize",burst);window.addEventListener("orientationchange",burst);
  if(window.visualViewport){visualViewport.addEventListener("resize",burst);}
  document.addEventListener("visibilitychange",()=>{if(!document.hidden)burst()});
