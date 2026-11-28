@@ -2676,7 +2676,7 @@ document.documentElement.classList.toggle("duo",duoOn());
 ["gesturestart","gesturechange"].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
 document.addEventListener("touchmove",e=>{if(e.touches&&e.touches.length>1)e.preventDefault()},{passive:false});
 /* ---------- stay up to date ---------- */
-const BUILD="1795835638";
+const BUILD="1795835943";
 async function checkUpdate(){if(location.protocol!=="https:"||BUILD.startsWith("__"))return;try{const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"});if(!r.ok)return;const v=(await r.json()).v;
  if(v&&v!==BUILD){let tried="";try{tried=sessionStorage.getItem("nt30-upd")||""}catch(e){}if(tried===v)return;try{sessionStorage.setItem("nt30-upd",v)}catch(e){}save();setTimeout(()=>location.reload(),400)}}catch(e){}}
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")checkUpdate()});setTimeout(checkUpdate,1500);
@@ -2895,6 +2895,20 @@ function gateCheck(){if(authed()){if(GATE)gateHide();return}if(!AUTHR)return;con
 window.NTgate=v=>{AUTHR=true;if(v){if(GATE)gateHide()}else gateCheck()};
 setInterval(()=>{if(!authed())gateCheck()},1500);
 setTimeout(()=>{if(!cloud()&&!st.owner){const o=$("onb");if(o&&!o.hidden&&!GATE)return;gateShow(true)}},10000);
+
+/* ---- keep the bottom menu on the real bottom edge (iPhone Duo unfold can leave a stale layout height) ---- */
+{const nav=document.querySelector(".bnav");let raf=0;
+ const realH=()=>{const vv=window.visualViewport;return Math.max(vv?vv.height+vv.offsetTop:0,document.documentElement.clientHeight||0,window.innerHeight||0)};
+ const pin=()=>{raf=0;if(!nav)return;if(!document.documentElement.classList.contains("duo")){if(nav.style.top){nav.style.removeProperty("top");nav.style.removeProperty("bottom")}return}const H=realH(),r=nav.getBoundingClientRect(),gap=H-r.bottom;
+  if(Math.abs(gap)>3&&H>=(window.innerHeight||0)-2){nav.style.setProperty("top",Math.round(H-r.height)+"px","important");nav.style.setProperty("bottom","auto","important")}
+  else if(nav.style.top&&Math.abs(gap)<=3){/* already flush */}
+  if(nav.style.top&&Math.abs(realH()-(window.innerHeight||0))<=2&&Math.abs((window.innerHeight||0)-nav.getBoundingClientRect().bottom)>3){nav.style.removeProperty("top");nav.style.removeProperty("bottom")}};
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(pin)};
+ const burst=()=>{kick();[120,350,800,1600].forEach(t=>setTimeout(kick,t));try{window.scrollTo(window.scrollX,window.scrollY)}catch(e){}};
+ window.addEventListener("resize",burst);window.addEventListener("orientationchange",burst);
+ if(window.visualViewport){visualViewport.addEventListener("resize",burst);visualViewport.addEventListener("scroll",kick)}
+ window.addEventListener("scroll",kick,{passive:true});document.addEventListener("visibilitychange",()=>{if(!document.hidden)burst()});
+ setInterval(kick,2000);burst()}
 function openSettings(){
  park();const s=$("sheet");s.style.removeProperty("--c");s.style.removeProperty("--d");
  s.innerHTML=`<div class="grab"></div>`;const B=$("setbody");s.appendChild(B);sxInit();sxGo(null,true);renderAcct();renderPrefs();
