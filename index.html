@@ -1199,6 +1199,7 @@ html.rdopen,html.rdopen body{overflow:hidden}
 .v sup{font:700 .58em var(--f-sans);color:var(--rmute);vertical-align:.5em;margin-right:3px;letter-spacing:0}
 .v i{font-style:italic}
 .rdr.red .rl{color:var(--rred)}
+mark.hm{color:inherit;border-radius:3px;padding:.06em 0;-webkit-box-decoration-break:clone;box-decoration-break:clone}mark.hm.ky{background:var(--hy)}mark.hm.kg{background:var(--hg)}mark.hm.kb{background:var(--hb)}mark.hm.kp{background:var(--hp)}.rdr .rtx{-webkit-user-select:text;user-select:text}.rdr .v sup{-webkit-user-select:none;user-select:none}
 .v.ky{background:var(--hy)}.v.kg{background:var(--hg)}.v.kb{background:var(--hb)}.v.kp{background:var(--hp)}
 .rdr:not(.nocomm) .v.ch{text-decoration:underline dotted var(--rcm);text-decoration-thickness:1.5px;text-underline-offset:.28em}
 .rdr:not(.nocomm) .v.ch>sup::after{content:"";display:inline-block;width:.42em;height:.42em;border-radius:50%;background:var(--rcm);margin-left:2px;vertical-align:.15em}
@@ -2678,7 +2679,7 @@ document.documentElement.classList.toggle("duo",duoOn());
 ["gesturestart","gesturechange"].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
 document.addEventListener("touchmove",e=>{if(e.touches&&e.touches.length>1)e.preventDefault()},{passive:false});
 /* ---------- stay up to date ---------- */
-const BUILD="1795837554";
+const BUILD="1795837979";
 async function checkUpdate(){if(location.protocol!=="https:"||BUILD.startsWith("__"))return;try{const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"});if(!r.ok)return;const v=(await r.json()).v;
  if(v&&v!==BUILD){let tried="";try{tried=sessionStorage.getItem("nt30-upd")||""}catch(e){}if(tried===v)return;try{sessionStorage.setItem("nt30-upd",v)}catch(e){}save();setTimeout(()=>location.reload(),400)}}catch(e){}}
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")checkUpdate()});setTimeout(checkUpdate,1500);
@@ -3052,7 +3053,7 @@ async function openReader(o){
  let texts;try{texts=await Promise.all(RD.list.map(([s])=>loadBook(s)))}catch(e){B.innerHTML=`<div class="rerr"><b>Couldn't load the scriptures.</b><p>Check your connection and try again. Once a book has loaded, it works offline.</p><button class="btn" id="rretry">Try again</button>${RD.mode==="day"?`<button class="link" id="rgl">Open in Gospel Library instead</button>`:""}</div>`;$("rretry").onclick=()=>openReader(o);const g=$("rgl");if(g)g.onclick=()=>{closeReader();openSheet(RD.i)};return}
  let h="";let lastB="";
  RD.list.forEach(([s,c],k)=>{h+=chapterHTML(s,c,texts[k].c[c-1]||[],s!==lastB);lastB=s});
- h+=endHTML();B.innerHTML=h;wireEnd();
+ h+=endHTML();B.innerHTML=h;applyPartials(B);wireEnd();
  RDR.scrollTop=0;PG.i=0;layoutPages();
  if(o.v||o.resume){const r=o.v||o.resume;const el=$("v-"+r.replace(/\./g,"_"));if(el){if(PM())goPage(pageOf(el),false);else el.scrollIntoView({block:"start"});if(o.v&&!o.resume){el.classList.add("flash");setTimeout(()=>el.classList.remove("flash"),2200)}}}
  observeEnds();onRScroll();loadComm();
@@ -3097,12 +3098,12 @@ function finishDay(i){const b=$("rdone");if(b){b.disabled=true;b.classList.add("
  setTimeout(()=>{RD=null;RDR.hidden=true;document.documentElement.classList.remove("rdopen");const m=document.querySelector('meta[name=theme-color]');if(m&&m._old)m.content=m._old;if(view!=="home")setView("home",true);complete(i)},240)}
 
 /* ---- selection + highlights ---- */
-$("rbody").addEventListener("click",e=>{if(PM()&&RD&&!e.target.closest("button,a")){const w=innerWidth,x=e.clientX,z=bookMode()?.12:.2;if(x<w*z){goPage(PG.i-1,true);return}if(x>w*(1-z)){goPage(PG.i+1,true);return}}const v=e.target.closest(".v");if(!v||!RD)return;if(LSN.on){listenFrom(v.dataset.r);return}
+$("rbody").addEventListener("click",e=>{if(tselBusy())return;if(PM()&&RD&&!e.target.closest("button,a")){const w=innerWidth,x=e.clientX,z=bookMode()?.12:.2;if(x<w*z){goPage(PG.i-1,true);return}if(x>w*(1-z)){goPage(PG.i+1,true);return}}const v=e.target.closest(".v");if(!v||!RD)return;if(LSN.on){listenFrom(v.dataset.r);return}
  const r=v.dataset.r;if(SEL.has(r)){SEL.delete(r);v.classList.remove("sel")}else{SEL.add(r);v.classList.add("sel");if(!reduceMo())v.animate([{backgroundColor:"rgba(127,127,127,.22)"},{backgroundColor:"rgba(127,127,127,0)"}],{duration:420})}
  showSel()});
 function clearSel(){SEL.forEach(r=>{const e=$("v-"+r.replace(/\./g,"_"));if(e)e.classList.remove("sel")});SEL.clear();const b=$("rsel");if(b)b.classList.remove("show")}
 function showSel(){const b=$("rsel");if(!SEL.size){b.classList.remove("show");return}
- const refs=sortRefs([...SEL]),anyH=refs.some(r=>st.hl[r]&&st.hl[r].c);
+ const refs=sortRefs([...SEL]),anyH=refs.some(r=>hcol(st.hl[r]));
  let cm="";if(st.rs.comm){const ns=refs.map(r=>commCount(r));const mx=Math.max(...ns);if(mx>0)cm=refs.length===1?`Highlighted by ${mx} ${mx===1?"other":"others"} in the community`:`Others in the community highlighted ${ns.filter(n=>n>0).length===refs.length?"these verses":"some of these verses"}`}
  b.innerHTML=`<div class="rsh"><b>${esc(refLabel(refs))}</b><button class="rsx" id="rsx" aria-label="Clear selection">${I9.x}</button></div>${cm?`<div class="rscm"><i></i>${esc(cm)}</div>`:""}
   <div class="rsc">${Object.keys(HC).map(k=>`<button class="hcb k${k}" data-c="${k}" aria-label="Highlight ${HC[k]}"></button>`).join("")}<span class="rsg"></span>
@@ -3111,16 +3112,62 @@ function showSel(){const b=$("rsel");if(!SEL.size){b.classList.remove("show");re
  b.querySelectorAll(".hcb").forEach(x=>x.onclick=()=>{setHl(refs,x.dataset.c);sfx("tap");clearSel()});
  $("rsx").onclick=clearSel;$("rscp").onclick=()=>copyRefs(refs);$("rssh").onclick=()=>shareRefs(refs);const rm=$("rsrm");if(rm)rm.onclick=()=>{setHl(refs,null);clearSel()}}
 function setHl(refs,c){const now=Date.now(),chs=new Set();
- refs.forEach(r=>{st.hl[r]=c?{c,at:now}:{c:0,at:now};const e=$("v-"+r.replace(/\./g,"_"));if(e){e.classList.remove("ky","kg","kb","kp");if(c){e.classList.add("k"+c);if(!reduceMo())e.animate([{filter:"brightness(1.25)"},{filter:"none"}],{duration:500})}}const p=refParts(r);chs.add(chKey(p.s,p.c))});
+ refs.forEach(r=>{st.hl[r]=c?{c,at:now}:{c:0,at:now};const e=$("v-"+r.replace(/\./g,"_"));if(e){paintV(e,[]);e.classList.remove("ky","kg","kb","kp");if(c){e.classList.add("k"+c);if(!reduceMo())e.animate([{filter:"brightness(1.25)"},{filter:"none"}],{duration:500})}}const p=refParts(r);chs.add(chKey(p.s,p.c))});
  save9();chs.forEach(k=>pushChl(k))}
-function myChl(k){const o={};Object.keys(st.hl).forEach(r=>{const h=st.hl[r];if(h&&h.c&&r.startsWith(k+".")&&r.split(".").length===3)o[r.split(".")[2]]=h.at||Date.now()});return o}
+
+/* ---- free highlights: any part of a verse, or across verses ---- */
+function pseg(h){if(!h||!h.p)return [];if(Array.isArray(h.p))return h.p;return String(h.p).split(";").filter(Boolean).map(x=>{const [a,b,c]=x.split(",");return [+a,+b,c]})}
+function pstr(a){return a.map(x=>x.join(",")).join(";")}
+function hcol(h){if(!h)return 0;if(h.c)return h.c;const p=pseg(h);return p.length?p[0][2]:0}
+function vTexts(v){const out=[],w=document.createTreeWalker(v,NodeFilter.SHOW_TEXT,{acceptNode:n=>n.parentElement&&n.parentElement.closest("sup")?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT});let n;while((n=w.nextNode()))out.push(n);return out}
+function vLen(v){return vTexts(v).reduce((a,t)=>a+t.data.length,0)}
+function vOff(v,node,o){try{const r=document.createRange();r.setStart(v,0);r.setEnd(node,o);const f=r.cloneContents();f.querySelectorAll("sup").forEach(x=>x.remove());return f.textContent.length}catch(e){return 0}}
+function paintV(v,segs){v.querySelectorAll("mark.hm").forEach(m=>{const p=m.parentNode;while(m.firstChild)p.insertBefore(m.firstChild,m);p.removeChild(m)});v.normalize();
+ if(!segs||!segs.length)return;const ts=vTexts(v);let pos=0;
+ ts.forEach(t=>{const a=pos,b=pos+t.data.length;pos=b;const hits=segs.filter(([s,e])=>e>a&&s<b).sort((x,y)=>x[0]-y[0]);if(!hits.length)return;
+  const f=document.createDocumentFragment();let cur=a;
+  hits.forEach(([s,e,c])=>{const s2=Math.max(s,a),e2=Math.min(e,b);if(s2>cur)f.appendChild(document.createTextNode(t.data.slice(cur-a,s2-a)));const m=document.createElement("mark");m.className="hm k"+c;m.textContent=t.data.slice(s2-a,e2-a);f.appendChild(m);cur=e2});
+  if(cur<b)f.appendChild(document.createTextNode(t.data.slice(cur-a)));t.parentNode.replaceChild(f,t)})}
+function applyPartials(root){root.querySelectorAll(".v").forEach(v=>{const h=st.hl[v.dataset.r];if(h&&!h.c&&h.p)paintV(v,pseg(h))})}
+let TSEL=null,tselAt=0;
+function tselBusy(){const s=window.getSelection&&getSelection();return (s&&!s.isCollapsed&&$("rbody").contains(s.anchorNode))||Date.now()-tselAt<450}
+function rangeSegs(rg){const out=[];$("rbody").querySelectorAll(".v").forEach(v=>{if(!rg.intersectsNode(v))return;const len=vLen(v);let s=v.contains(rg.startContainer)?vOff(v,rg.startContainer,rg.startOffset):0,e=v.contains(rg.endContainer)?vOff(v,rg.endContainer,rg.endOffset):len;s=Math.max(0,Math.min(len,s));e=Math.max(0,Math.min(len,e));if(e<=s)return;
+ const tx=vTexts(v).map(t=>t.data).join("");const piece=tx.slice(s,e);if(!piece.trim())return;
+ const full=!tx.slice(0,s).trim()&&!tx.slice(e).trim();out.push({r:v.dataset.r,s,e,len,full,piece:piece.trim()})});return out}
+document.addEventListener("selectionchange",()=>{clearTimeout(document._tsT);document._tsT=setTimeout(()=>{if(!RD||RDR.hidden)return;const sel=getSelection();
+ if(!sel||sel.isCollapsed||!sel.rangeCount||!$("rbody").contains(sel.getRangeAt(0).commonAncestorContainer)){if(TSEL){TSEL=null;if(!SEL.size){const b=$("rsel");if(b)b.classList.remove("show")}}return}
+ const segs=rangeSegs(sel.getRangeAt(0));if(!segs.length)return;tselAt=Date.now();
+ SEL.forEach(r=>{const e=$("v-"+r.replace(/\./g,"_"));if(e)e.classList.remove("sel")});SEL.clear();TSEL={segs,text:segs.map(x=>x.piece).join(" ")};showTSel()},180)});
+function showTSel(){const b=$("rsel");if(!TSEL)return;const refs=sortRefs([...new Set(TSEL.segs.map(x=>x.r))]),anyH=refs.some(r=>hcol(st.hl[r]));
+ b.innerHTML=`<div class="rsh"><b>${esc(refLabel(refs))}</b><button class="rsx" id="rsx" aria-label="Clear selection">${I9.x}</button></div>
+  <div class="rsc">${Object.keys(HC).map(k=>`<button class="hcb k${k}" data-c="${k}" aria-label="Highlight ${HC[k]}"></button>`).join("")}<span class="rsg"></span>
+  <button class="rsa" id="rscp">${I9.copy}<span>Copy</span></button><button class="rsa" id="rssh">${I9.send}<span>Share</span></button>${anyH?`<button class="rsa" id="rsrm">${I9.erase}<span>Remove</span></button>`:""}</div>`;
+ b.classList.add("show");const keep=TSEL;
+ const done_=()=>{try{getSelection().removeAllRanges()}catch(e){}TSEL=null;tselAt=Date.now();b.classList.remove("show")};
+ b.querySelectorAll(".hcb").forEach(x=>{x.onpointerdown=e=>e.preventDefault();x.onclick=()=>{applyTSel(keep,x.dataset.c);sfx("tap");done_()}});
+ $("rsx").onclick=done_;$("rscp").onclick=()=>{copyRefs(refs,keep.text);done_()};$("rssh").onclick=()=>{done_();shareRefs(refs,keep.text,c=>applyTSel(keep,c))};
+ const rm=$("rsrm");if(rm)rm.onclick=()=>{applyTSel(keep,null);done_()};
+ b.querySelectorAll("button").forEach(x=>{if(!x.onpointerdown)x.onpointerdown=e=>e.preventDefault()})}
+function applyTSel(ts,c){const now=Date.now(),chs=new Set();
+ ts.segs.forEach(({r,s,e,len,full})=>{const h=st.hl[r]||{};let segs=h.c?[[0,len,h.c]]:pseg(h).map(x=>x.slice());
+  if(full&&c){st.hl[r]={c,at:now};segs=null}
+  else{if(full){segs=[]}else{segs=segs.flatMap(([a,b,k])=>b<=s||a>=e?[[a,b,k]]:[...(a<s?[[a,s,k]]:[]),...(b>e?[[e,b,k]]:[])]);if(c)segs.push([s,e,c])}
+   segs.sort((x,y)=>x[0]-y[0]);const m=[];segs.forEach(x=>{const l=m[m.length-1];if(l&&l[2]===x[2]&&l[1]>=x[0])l[1]=Math.max(l[1],x[1]);else m.push(x)});segs=m;
+   if(segs.length===1&&segs[0][0]<=0&&segs[0][1]>=len){st.hl[r]={c:segs[0][2],at:now};segs=null}else st.hl[r]=segs.length?{c:0,p:pstr(segs),at:now}:{c:0,at:now}}
+  const v=$("v-"+r.replace(/\./g,"_"));if(v){v.classList.remove("ky","kg","kb","kp");const H=st.hl[r];if(H.c){paintV(v,[]);v.classList.add("k"+H.c)}else paintV(v,pseg(H));
+   if(c&&!reduceMo())v.animate([{filter:"brightness(1.2)"},{filter:"none"}],{duration:450})}
+  const p=refParts(r);chs.add(chKey(p.s,p.c))});
+ save9();chs.forEach(k=>pushChl(k))}
+function domText(t){return String(t||"").replace(/[¶\[\]{}]/g,"")}
+async function hlExcerpt(refs){const parts=await Promise.all(refs.map(async r=>{const h=st.hl[r];if(h&&!h.c&&h.p){const p=refParts(r),b=await loadBook(p.s),t=domText(((b.c[p.c-1]||[])[p.v-1])||"");return pseg(h).map(([a,e])=>t.slice(a,e).trim()).join(" … ")}return verseText(r)}));return parts.join(" ")}
+function myChl(k){const o={};Object.keys(st.hl).forEach(r=>{const h=st.hl[r];if(hcol(h)&&r.startsWith(k+".")&&r.split(".").length===3)o[r.split(".")[2]]=h.at||Date.now()});return o}
 function pushChl(k){st.chlP=st.chlP||{};const c=cloud();if(!c||!c.user()||!c.setChl){st.chlP[k]=1;saveLocal();return}const m=st.hlShare?myChl(k):{};c.setChl(k,Object.keys(m).length?m:null).then(()=>{delete st.chlP[k];saveLocal()}).catch(e=>{st.chlP[k]=1;saveLocal();console.warn("[nt30] chl",e)})}
 function allMyChapters(){const s=new Set();Object.keys(st.hl).forEach(r=>{const p=r.split(".");if(p.length===3)s.add(p[0]+"."+p[1])});return [...s]}
 function setHlShare(on){st.hlShare=on;save9();allMyChapters().forEach(k=>pushChl(k))}
 async function selText(refs){const t=await Promise.all(refs.map(verseText));return t.join(" ")}
-async function copyRefs(refs){const t=await selText(refs);const out=`${t}\n${refLabel(refs)} (KJV)`;try{await navigator.clipboard.writeText(out);toast(`${ICON.check} Copied`)}catch(e){const ta=document.createElement("textarea");ta.value=out;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");toast(`${ICON.check} Copied`)}catch(_){}ta.remove()}clearSel()}
-async function shareRefs(refs){const c=cloud();if(!c||!c.user()){openAccount();return}
- const t=await selText(refs),label=refLabel(refs),hc=(refs.map(r=>st.hl[r]&&st.hl[r].c).find(Boolean))||"y";let col=hc;
+async function copyRefs(refs,tx){const t=tx||await selText(refs);const out=`${t}\n${refLabel(refs)} (KJV)`;try{await navigator.clipboard.writeText(out);toast(`${ICON.check} Copied`)}catch(e){const ta=document.createElement("textarea");ta.value=out;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");toast(`${ICON.check} Copied`)}catch(_){}ta.remove()}clearSel()}
+async function shareRefs(refs,tx,onCol){const c=cloud();if(!c||!c.user()){openAccount();return}
+ const t=tx||await selText(refs),label=refLabel(refs),hc=(refs.map(r=>hcol(st.hl[r])).find(Boolean))||"y";let col=hc;
  park();const s=$("sheet");s.style.removeProperty("--c");s.style.removeProperty("--d");
  s.innerHTML=`<div class="grab"></div><div class="meta"><span>Share to the feed</span></div><h2 id="shT">${esc(label)}</h2>
   <blockquote class="hlq k${col}" id="hlq">${esc(t.length>900?t.slice(0,900)+"…":t)}</blockquote>
@@ -3131,7 +3178,7 @@ async function shareRefs(refs){const c=cloud();if(!c||!c.user()){openAccount();r
  s.querySelectorAll(".hlpick .hcb").forEach(b=>b.onclick=()=>{col=b.dataset.c;s.querySelectorAll(".hlpick .hcb").forEach(x=>x.setAttribute("aria-pressed",x===b));$("hlq").className="hlq k"+col});
  $("hlno").onclick=closeSheet;
  $("hlgo").onclick=async()=>{const g=$("hlgo");g.disabled=true;g.textContent="Sharing…";
-  try{await c.postHl({ref:sortRefs(refs)[0],refs:sortRefs(refs).slice(0,60),label:label.slice(0,80),q:t.slice(0,1500),c:col,text:$("hlt").value.trim().slice(0,1000),anon:$("hlanon").checked});setHl(refs,col);closeSheet();clearSel();toast(`${ICON.check} Shared to the feed`);sfx("heart")}
+  try{await c.postHl({ref:sortRefs(refs)[0],refs:sortRefs(refs).slice(0,60),label:label.slice(0,80),q:t.slice(0,1500),c:col,text:$("hlt").value.trim().slice(0,1000),anon:$("hlanon").checked});if(onCol)onCol(col);else setHl(refs,col);closeSheet();clearSel();toast(`${ICON.check} Shared to the feed`);sfx("heart")}
   catch(e){console.warn(e);$("hlm").textContent="Couldn't share right now. Check your connection.";g.disabled=false;g.textContent="Share it"}};
  $("scrim").classList.add("show");s.classList.add("show")}
 
@@ -3190,7 +3237,7 @@ function openRS(){park();const s=$("sheet");s.style.removeProperty("--c");s.styl
 let LIB={lv:0},HLF="all";
 const GROUPS=["Gospels","History","Paul's Letters","General Letters","Prophecy"];
 function bookRead(s){let n=0;for(let c=1;c<=BK[s].c;c++)if(st.rd[chKey(s,c)])n++;return n}
-function myHlRefs(){return Object.keys(st.hl).filter(r=>st.hl[r]&&st.hl[r].c&&r.split(".").length===3&&BK[r.split(".")[0]])}
+function myHlRefs(){return Object.keys(st.hl).filter(r=>hcol(st.hl[r])&&r.split(".").length===3&&BK[r.split(".")[0]])}
 function contCard(where){const p=st.pos;if(!p||!p.r||Date.now()-(p.at||0)>21*DAY)return "";
  if(p.m==="day"){if(p.p!==st.p||done(p.i)||!DAYS[p.i])return "";if(where==="home"&&p.i===curIdx())return ""}
  const lbl=p.m==="day"?`Day ${p.i+1} · ${esc(DAYS[p.i].t)}`:"From the Library";
@@ -3204,7 +3251,7 @@ function renderLib(){
  const totalRead=Object.keys(st.rd).filter(k=>BK[k.split(".")[0]]).length;
  if(L.lv===0){
   H.innerHTML=`<h2>Library</h2><p>King James Version</p>`+lpTgl();
-  const hs=myHlRefs(),cnt={};hs.forEach(r=>cnt[st.hl[r].c]=(cnt[st.hl[r].c]||0)+1);
+  const hs=myHlRefs(),cnt={};hs.forEach(r=>{const c=hcol(st.hl[r]);cnt[c]=(cnt[c]||0)+1});
   B.innerHTML=`${contCard("lib")}<button class="card vol" data-go="nt"><span class="volic">${I9.lib}</span><span class="volt"><b>New Testament</b><small>27 books · 260 chapters</small>${showP()?`<span class="bar9"><i style="width:${(totalRead/260*100).toFixed(1)}%"></i></span><small>${totalRead} of 260 chapters read</small>`:""}</span>${I9.next}</button>
    <button class="card vol hlv" data-go="hl"><span class="volic">${I9.mark}</span><span class="volt"><b>My highlights</b><small>${hs.length?`${hs.length} ${hs.length===1?"verse":"verses"}`:"Tap any verse while reading to highlight it"}</small>${hs.length?`<span class="hdots">${Object.keys(HC).filter(k=>cnt[k]).map(k=>`<i class="k${k}"></i>${cnt[k]}`).join("")}</span>`:""}</span>${I9.next}</button>
    <p class="lnote">Tap a verse while you read to highlight, copy or share it.</p>`;
@@ -3233,14 +3280,14 @@ function goLib(n){const dir=(typeof n.lv==="number"?n.lv:1.5)>=(typeof LIB.lv===
 async function renderHls(B){
  const all=sortRefs(myHlRefs());
  const chips=`<div class="hlchips">${[["all","All"],...Object.entries(HC)].map(([k,l])=>`<button data-f="${k}" aria-pressed="${HLF===k}">${k==="all"?"":`<i class="k${k}"></i>`}${l}</button>`).join("")}</div>`;
- const refs=all.filter(r=>HLF==="all"||st.hl[r].c===HLF);
+ const refs=all.filter(r=>HLF==="all"||hcol(st.hl[r])===HLF);
  if(!all.length){B.innerHTML=`<div class="card empty9"><b>No highlights yet</b><p>While you read, tap any verse, then pick a color.</p><button class="btn" id="hlstart">Start today's reading</button></div>`;$("hlstart").onclick=()=>openReader({mode:"day",i:Math.max(0,Math.min(29,curIdx()))});return}
  /* group consecutive verses of same color */
- const groups=[];refs.forEach(r=>{const p=refParts(r),g=groups[groups.length-1];if(g){const q=refParts(g.refs[g.refs.length-1]);if(q.s===p.s&&q.c===p.c&&q.v+1===p.v&&st.hl[g.refs[0]].c===st.hl[r].c){g.refs.push(r);return}}groups.push({refs:[r]})});
- let lastB="";B.innerHTML=chips+(groups.length?groups.map((g,k)=>{const s=g.refs[0].split(".")[0];const hd=s!==lastB?`<p class="lgrp">${esc(BK[s].n)}</p>`:"";lastB=s;return hd+`<button class="card hli" data-r="${g.refs[0]}" data-k="${k}"><i class="hbar k${st.hl[g.refs[0]].c}"></i><span><b>${esc(refLabel(g.refs))}</b><span class="hlt" id="hlt${k}">…</span></span></button>`}).join(""):`<p class="lnote">No ${HC[HLF].toLowerCase()} highlights yet.</p>`);
+ const groups=[];refs.forEach(r=>{const p=refParts(r),g=groups[groups.length-1];if(g){const q=refParts(g.refs[g.refs.length-1]);if(q.s===p.s&&q.c===p.c&&q.v+1===p.v&&st.hl[g.refs[0]].c&&st.hl[r].c&&st.hl[g.refs[0]].c===st.hl[r].c){g.refs.push(r);return}}groups.push({refs:[r]})});
+ let lastB="";B.innerHTML=chips+(groups.length?groups.map((g,k)=>{const s=g.refs[0].split(".")[0];const hd=s!==lastB?`<p class="lgrp">${esc(BK[s].n)}</p>`:"";lastB=s;return hd+`<button class="card hli" data-r="${g.refs[0]}" data-k="${k}"><i class="hbar k${hcol(st.hl[g.refs[0]])}"></i><span><b>${esc(refLabel(g.refs))}</b><span class="hlt" id="hlt${k}">…</span></span></button>`}).join(""):`<p class="lnote">No ${HC[HLF].toLowerCase()} highlights yet.</p>`);
  B.querySelectorAll(".hlchips button").forEach(b=>b.onclick=()=>{HLF=b.dataset.f;renderHls(B)});
  B.querySelectorAll(".hli").forEach(b=>b.onclick=()=>{const p=refParts(b.dataset.r);openReader({mode:"ch",s:p.s,c:p.c,v:b.dataset.r})});
- groups.forEach(async(g,k)=>{try{const t=await selText(g.refs);const e=$("hlt"+k);if(e)e.textContent=t}catch(e){const x=$("hlt"+k);if(x)x.textContent="Connect to the internet to load this verse."}});
+ groups.forEach(async(g,k)=>{try{const t=await hlExcerpt(g.refs);const e=$("hlt"+k);if(e)e.textContent=t}catch(e){const x=$("hlt"+k);if(x)x.textContent="Connect to the internet to load this verse."}});
 }
 
 /* ---- verse of the day ---- */
@@ -3343,7 +3390,7 @@ function pageCurl(dir,from,to){
 }
 (function(){let sx=0,sy=0,st0=0,on=false;
  RDR.addEventListener("touchstart",e=>{if(!PM()||e.touches.length!==1)return;on=true;sx=e.touches[0].clientX;sy=e.touches[0].clientY;st0=Date.now()},{passive:true});
- RDR.addEventListener("touchend",e=>{if(!on)return;on=false;const t=e.changedTouches[0],dx=t.clientX-sx,dy=t.clientY-sy;if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)*1.3&&Date.now()-st0<900){goPage(PG.i+(dx<0?1:-1),true)}},{passive:true});
+ RDR.addEventListener("touchend",e=>{if(!on)return;on=false;if(tselBusy())return;const t=e.changedTouches[0],dx=t.clientX-sx,dy=t.clientY-sy;if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)*1.3&&Date.now()-st0<900){goPage(PG.i+(dx<0?1:-1),true)}},{passive:true});
  addEventListener("keydown",e=>{if(RDR.hidden||!PM())return;if(e.key==="ArrowRight")goPage(PG.i+1,true);if(e.key==="ArrowLeft")goPage(PG.i-1,true)});
 })();
 Object.assign(window,{goPage,layoutPages,PG,openReader,closeReader,RDR,stopListen,applyRS,goLib,renderAdmin9,st9:()=>st});
