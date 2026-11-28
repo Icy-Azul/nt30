@@ -1354,6 +1354,26 @@ details.gl9 .rbtn{min-height:0;padding:10px 12px}details.gl9 .rbtn .ri{display:n
 .fi.fhl .fq{display:block;margin:6px 0 2px;padding:8px 12px;border-left:4px solid;border-radius:8px;font:16px/1.5 var(--f-serif);color:var(--ink);text-decoration:none}
 .fq.ky{background:rgba(255,212,0,.16);border-color:#e6bd00}.fq.kg{background:rgba(72,199,116,.14);border-color:#36b56a}.fq.kb{background:rgba(64,150,255,.13);border-color:#3f8ef0}.fq.kp{background:rgba(255,105,170,.13);border-color:#f0609f}
 .fq .fqr{display:block;font:800 12.5px Nunito,sans-serif;color:var(--mute);margin-top:4px}
+/* feed filters */
+.ffilt{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:12px 0 2px;padding:2px 0 4px}.ffilt::-webkit-scrollbar{display:none}
+.ffilt button{flex:1 0 auto;border:2px solid var(--line);background:var(--card);color:var(--mute);border-radius:99px;padding:7px 12px;font:800 14px Nunito,sans-serif;cursor:pointer}
+.ffilt button[aria-pressed=true]{background:var(--blue);border-color:var(--blue);color:#fff}
+html[data-skin=refined] .ffilt button{border:1px solid #c9ad74;border-radius:3px;background:rgba(255,250,236,.6);color:#6b5434;font:600 13px Cinzel,'EB Garamond',serif;letter-spacing:.02em;padding:7px 9px}
+html[data-skin=refined] .ffilt button[aria-pressed=true]{background:#7a1f22;border-color:#5c1414;color:#f9f1de}
+html[data-skin=star] .ffilt button{border:1px solid rgba(243,201,105,.3);background:rgba(255,255,255,.04);color:#c9cfee}
+html[data-skin=star] .ffilt button[aria-pressed=true]{background:linear-gradient(#ffd77a,#e0ad45);border-color:#c99a35;color:#1a2250}
+html[data-skin=basic] .ffilt button{border-width:1px;font-family:Inter,system-ui,sans-serif;font-weight:600}
+html[data-skin=basic] .ffilt button[aria-pressed=true]{background:#2563eb;border-color:#2563eb}
+/* highlight posts: separate blocks, long ones fold up */
+.fhl .fq+.fq{margin-top:8px}
+.fqsum{display:flex;align-items:center;gap:12px;width:100%;margin:6px 0 2px;padding:10px 12px;border:1px solid var(--line);border-left:4px solid #e6bd00;border-radius:8px;background:rgba(255,212,0,.08);color:var(--ink);text-align:left;cursor:pointer;font:inherit}
+.fqsum b{display:block;font:16px/1.4 var(--f-serif);font-weight:600}.fqsum small{display:block;margin-top:2px;font:800 12.5px Nunito,sans-serif;color:var(--mute)}
+.fqdots{display:flex;flex-direction:column;gap:3px;flex:0 0 auto}.fqdots i{display:block;width:8px;height:8px;border-radius:50%}
+.fqdots .ky{background:#e6bd00}.fqdots .kg{background:#36b56a}.fqdots .kb{background:#3f8ef0}.fqdots .kp{background:#f0609f}
+.fqx{display:block;margin:6px 0 0;border:0;background:none;padding:4px 0;color:var(--mute);font:800 13px Nunito,sans-serif;cursor:pointer}
+html[data-skin=refined] .fqsum{border-radius:3px;border-color:#c9ad74;background:rgba(246,236,212,.6)}html[data-skin=refined] .fqsum b{font-family:'EB Garamond',Georgia,serif}
+html[data-skin=star] .fqsum{border-color:rgba(243,201,105,.3);background:rgba(255,255,255,.04)}
+
 .akpi{display:grid;grid-template-columns:1fr 1fr;gap:10px}.akpi div{background:var(--gray);border-radius:14px;padding:10px 12px}.akpi b{display:block;font-size:24px}.akpi small{color:var(--mute);font-weight:800;font-size:12px}
 .lprog{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:6px;font:800 13.5px Nunito,sans-serif;color:var(--mute)}
 
@@ -1362,18 +1382,18 @@ details.gl9 .rbtn{min-height:0;padding:10px 12px}details.gl9 .rbtn .ri{display:n
 /* page-turn mode */
 .rpager,.rgutter{display:none}
 .rdr.pages{overflow:hidden}
-.rdr.pages .rbody{position:absolute;top:var(--rtop,64px);bottom:calc(52px + env(safe-area-inset-bottom));left:0;right:0;max-width:none;margin:0;padding:12px 24px 0;column-width:calc(100vw - 48px);column-gap:48px;column-fill:auto;overflow:hidden;background:var(--rbg)}
+.rdr.pages .rbody{position:absolute;top:var(--rtop,64px);bottom:calc(52px + env(safe-area-inset-bottom));left:0;right:0;max-width:none;margin:0;padding:12px 24px 0;column-count:1;column-width:auto;column-gap:48px;column-fill:auto;overflow:hidden;background:var(--rbg)}
 .rdr.pages .rch{padding-top:0}.rdr.pages .rch:first-child .rcht{margin-top:2px}
-.rdr.pages .rfin,.rdr.pages .rpn{break-inside:avoid}
+.rdr.pages .rfin,.rdr.pages .rpn{break-inside:avoid}.rdr.pages .rfin{box-sizing:border-box;max-width:100%;margin-left:0;margin-right:0}.rdr.pages .rfin2{margin-top:18px;padding:18px 14px 16px}.rdr.pages .rfin2 .rfp{margin-bottom:14px}.rfin2 .rfp,.rfin2 .rfh{text-wrap:balance}html[data-skin=refined] .rdr.pages .rfin2 .rfc,html[data-skin=refined] .rdr.pages .rfin2 .rfseal svg{width:76px;height:76px}.rdr.pages .rfin2 .btn.ghost{margin-top:8px!important}
 .rdr.pages .rflapw,.rdr.pages .rflsh{position:absolute;top:var(--rtop,64px);bottom:calc(52px + env(safe-area-inset-bottom));left:0;right:0;pointer-events:none;transform-origin:50% 50%}.rdr.pages .rflsh{z-index:2}.rdr.pages .rflapw{z-index:4}.rflap{position:absolute;inset:0;display:block}.rdr.pages .rcurl{box-shadow:none!important;will-change:clip-path}
 .rdr.pages .rcunder{position:absolute;top:var(--rtop,64px);bottom:calc(52px + env(safe-area-inset-bottom));left:0;right:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,rgba(0,0,0,.28),rgba(0,0,0,.06) 40%,transparent 75%);opacity:0}.rdr.book .rcunder{left:50%}
-.rdr.pages .rcurl{position:absolute;top:var(--rtop,64px);bottom:calc(52px + env(safe-area-inset-bottom));left:0;right:0;margin:0;padding:12px 24px 0;column-width:calc(100vw - 48px);column-gap:48px;column-fill:auto;overflow:hidden;background:var(--rbg);z-index:2;pointer-events:none;box-shadow:6px 0 22px rgba(0,0,0,.18);backface-visibility:hidden;will-change:transform}
+.rdr.pages .rcurl{position:absolute;top:var(--rtop,64px);bottom:calc(52px + env(safe-area-inset-bottom));left:0;right:0;margin:0;padding:12px 24px 0;column-count:1;column-width:auto;column-gap:48px;column-fill:auto;overflow:hidden;background:var(--rbg);z-index:2;pointer-events:none;box-shadow:6px 0 22px rgba(0,0,0,.18);backface-visibility:hidden;will-change:transform}
 .rcshade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,0) 40%,rgba(0,0,0,.25) 85%,rgba(255,255,255,.35) 100%);opacity:0;pointer-events:none}
 .rdr.pages .rpager{display:flex;position:absolute;left:0;right:0;bottom:0;height:calc(52px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);align-items:center;justify-content:space-between;gap:8px;padding-left:10px;padding-right:10px;font:600 12.5px var(--f-sans);color:var(--rmute);background:var(--rbg);border-top:1px solid var(--rline);z-index:3}
 .rpg{border:0;background:none;color:var(--rink);width:44px;height:40px;border-radius:12px;display:grid;place-items:center;cursor:pointer}.rpg svg{width:20px;height:20px}.rpg:disabled{opacity:.25}
 .rdr.pages .rsel,.rdr.pages .rplay{bottom:calc(60px + env(safe-area-inset-bottom))}
 /* Duo open book */
-.rdr.book .rbody,.rdr.book .rcurl{column-width:calc(50vw - 48px);column-gap:48px;padding:18px 24px 0;font-size:calc(var(--rfs,19px) * .96)}
+.rdr.book .rbody,.rdr.book .rcurl{column-count:2;column-width:auto;column-gap:48px;padding:18px 24px 0;font-size:calc(var(--rfs,19px) * .96)}
 .rdr.book .rgutter{display:block;position:absolute;top:var(--rtop,64px);bottom:calc(52px + env(safe-area-inset-bottom));left:50%;width:70px;margin-left:-35px;pointer-events:none;z-index:2;background:linear-gradient(90deg,transparent,rgba(0,0,0,.07) 40%,rgba(0,0,0,.16) 50%,rgba(0,0,0,.07) 60%,transparent)}
 .rdr.book{background:linear-gradient(90deg,rgba(0,0,0,.08),transparent 3%,transparent 97%,rgba(0,0,0,.08)),var(--rbg)}
 .rdr.book .rbody{background:transparent}
@@ -2589,15 +2609,31 @@ function renderDash(){
 }
 
 /* ---------- feed ---------- */
+/* ---- highlight posts: keep separate highlights as separate blocks ---- */
+const HLOPEN=new Set();
+function hlK(c){return ["y","g","b","p"].includes(c)?c:"y"}
+function hlPostGroups(e){
+ if(Array.isArray(e.groups)&&e.groups.length)return e.groups.map(g=>({refs:Array.isArray(g.refs)?g.refs:[],c:g.c||e.c,q:typeof g.q==="string"?g.q:null}));
+ const refs=Array.isArray(e.refs)&&e.refs.length?e.refs:(e.ref?[e.ref]:[]);
+ const gs=refs.length?hlGroups(refs):[[]];
+ if(gs.length===1)return [{refs:gs[0],c:e.c,q:e.q||""}];
+ return gs.map(g=>({refs:g,c:e.c,q:null}))/* older posts: text filled in from the verses */}
+function hlChapters(gs){const ks=[];gs.forEach(g=>g.refs.forEach(r=>{const p=refParts(r),k=chName(p.s,p.c);if(!ks.includes(k))ks.push(k)}));return ks.length<=2?ks.join(" and "):ks.slice(0,-1).join(", ")+" and "+ks[ks.length-1]}
+async function fillHlText(L){for(const w of L.querySelectorAll(".fqw[data-fill]")){const refs=w.dataset.fill.split(",").filter(Boolean);w.removeAttribute("data-fill");try{const t=await Promise.all(refs.map(verseText));w.textContent=t.join(" ")}catch(e){w.textContent=""}}}
 function ago(ts){if(!ts)return "just now";const d=ts.toDate?ts.toDate():new Date(ts),s=(Date.now()-d)/1000;if(s<60)return "just now";if(s<3600)return `${Math.floor(s/60)}m ago`;if(s<86400)return `${Math.floor(s/3600)}h ago`;if(s<172800)return "yesterday";return d.toLocaleDateString(undefined,{month:"short",day:"numeric"})}
 function dayTitle(p,i){const a=p==="ess"?ESS:FULL;return a[i]?a[i].t:""}
 function feedItem(e){
  const c=cloud(),me=c&&c.user()?c.user().uid:"",hs=e.hearts||[],on=hs.includes(me),nm=e.anon?(e.uid===me?"Anonymous (you)":"Anonymous"):String(e.name||"Someone");
  const hb=`<button class="hb${on?" on":""}" data-id="${e.id}" aria-label="Heart">${on?ICON.heart:ICON.heartO}<span>${hs.length||""}</span></button>`;
  const av=e.anon?`<span class="av anon">?</span>`:avatar(nm);
- if(e.type==="hl"){const lab=e.label||(e.ref?refLabel([e.ref]):"");return `<div class="fi fth fhl" data-id="${e.id}">${av}<div class="fbd"><div class="hd"><b>${esc(nm)}</b>${e.anon?"":badge(e.uid)} highlighted<small>${ago(e.at)}</small></div>
-  <a class="fq k${["y","g","b","p"].includes(e.c)?e.c:"y"}" href="#" data-hlref="${esc(e.ref||"")}">${esc(e.q||"")}<span class="fqr">${esc(lab)} · Tap to read</span></a>${e.text?`<div class="tx">${esc(e.text)}</div>`:""}
-  <div class="ac">${hb}${e.uid===me||(c&&c.isAdmin())?`<button class="more" data-own="${e.id}">${e.uid===me?"Delete":"Remove"}</button>`:""}</div></div></div>`}
+ if(e.type==="hl"){const own=e.uid===me||(c&&c.isAdmin())?`<button class="more" data-own="${e.id}">${e.uid===me?"Delete":"Remove"}</button>`:"";
+  const gs=hlPostGroups(e),nv=gs.reduce((a,g)=>a+g.refs.length,0),big=nv>3,open=HLOPEN.has(e.id);
+  const what=big?`highlighted ${nv} verses in ${esc(hlChapters(gs))}`:"highlighted";
+  const blocks=gs.map(g=>{const lab=g.refs.length?refLabel(g.refs):(e.label||"");return `<a class="fq k${hlK(g.c)}" href="#" data-hlref="${esc(g.refs[0]||e.ref||"")}">${g.q!=null?esc(g.q):`<span class="fqw" data-fill="${esc(g.refs.join(","))}">…</span>`}<span class="fqr">${esc(lab)} · Tap to read</span></a>`}).join("");
+  const body=!big?blocks:open?`<div class="fqs">${blocks}</div><button class="fqx" data-hlx="${e.id}">Show less</button>`:`<button class="fqsum" data-hlx="${e.id}"><span class="fqdots">${gs.slice(0,6).map(g=>`<i class="k${hlK(g.c)}"></i>`).join("")}</span><span><b>${gs.length} ${gs.length===1?"highlight":"highlights"} · ${esc((l=>l.length>70?l.slice(0,70)+"…":l)(refLabel(gs.flatMap(g=>g.refs))))}</b><small>Tap to see these highlights</small></span></button>`;
+  return `<div class="fi fth fhl${big?" fbig":""}" data-id="${e.id}">${av}<div class="fbd"><div class="hd"><b>${esc(nm)}</b>${e.anon?"":badge(e.uid)} ${what}<small>${ago(e.at)}</small></div>
+  ${body}${e.text?`<div class="tx">${esc(e.text)}</div>`:""}
+  <div class="ac">${hb}${own}</div></div></div>`}
  if(e.type==="thought")return `<div class="fi fth" data-id="${e.id}">${av}<div class="fbd"><div class="hd"><b>${esc(nm)}</b>${e.anon?"":badge(e.uid)}<small>${Number.isInteger(e.day)?`Day ${e.day+1} · ${esc(dayTitle(e.p,e.day))} · `:""}${ago(e.at)}${e.edited?" · edited":""}</small></div><div class="tx">${esc(e.text||"")}</div>
   <div class="ac">${hb}${e.uid===me||(c&&c.isAdmin())?`<button class="more" data-own="${e.id}">${e.uid===me?"Edit":"Remove"}</button>`:""}</div></div></div>`;
  const what=e.type==="finish"?`finished the whole challenge! 🎉`:`finished Day ${e.day+1}`;
@@ -2609,15 +2645,27 @@ function feedDot(){const c=cloud(),b=document.querySelector('.bnav button[data-v
  const me=c&&c.user()?c.user().uid:"",has=c&&c.user()&&c.feed().some(e=>e.uid!==me&&e.type==="thought"&&e.at&&(e.at.toMillis?e.at.toMillis():0)>feedSeenAt);
  if(has&&view!=="feed"){if(!d){d=document.createElement("i");d.className="dot";b.appendChild(d)}}else if(d)d.remove()}
 let feedIds=new Set();
+const FF=[["all","All"],["thought","Thoughts"],["hl","Highlights"],["prog","Progress"]];
+let feedF="all";try{const v=localStorage.getItem("nt30-feedf");if(FF.some(x=>x[0]===v))feedF=v}catch(e){}
+function feedMatch(e){return feedF==="all"||(feedF==="prog"?(e.type==="done"||e.type==="finish"):e.type===feedF)}
+const FF_EMPTY={thought:"No thoughts shared yet. Be the first!",hl:"No highlights shared yet. Tap a verse while you read to highlight it.",prog:"No one has finished a reading yet. Check back after Day 1 starts."};
+function paintFeedFilters(){const L=$("feedlist");if(!L)return;let bar=$("ffilt");
+ if(!bar){bar=document.createElement("div");bar.id="ffilt";bar.className="ffilt";bar.setAttribute("role","group");bar.setAttribute("aria-label","Filter the feed");L.parentNode.insertBefore(bar,L)}
+ bar.innerHTML=FF.map(([k,t])=>`<button data-f="${k}" aria-pressed="${k===feedF}">${t}</button>`).join("");
+ bar.querySelectorAll("button").forEach(b=>b.onclick=()=>{if(feedF===b.dataset.f)return;feedF=b.dataset.f;try{localStorage.setItem("nt30-feedf",feedF)}catch(e){}renderFeed()})}
+function wireFeed(R,f){const c=cloud();
+ R.querySelectorAll(".hb").forEach(b=>b.onclick=()=>heartTap(b));
+ R.querySelectorAll("[data-hlx]").forEach(b=>b.onclick=()=>{const id=b.dataset.hlx;if(HLOPEN.has(id))HLOPEN.delete(id);else HLOPEN.add(id);const e=f.find(x=>x.id===id),old=document.querySelector(`#feedlist .fi[data-id="${id}"]`);if(!e||!old)return;const t=document.createElement("div");t.innerHTML=feedItem(e);const nw=t.firstElementChild;old.replaceWith(nw);wireFeed(nw,f);if(!HLOPEN.has(id))nw.scrollIntoView({block:"nearest"})});
+ R.querySelectorAll("[data-own]").forEach(b=>b.onclick=()=>{const e=f.find(x=>x.id===b.dataset.own);if(!e)return;if(e.uid===c.user().uid){if(e.type==="hl"){if(confirm("Delete this post?"))c.deletePost(e.id)}else openThought(e.day,e)}else if(confirm("Remove this post from the feed?"))c.deletePost(e.id)});
+ fillHlText(R)}
 function renderFeed(){
  const c=cloud(),L=$("feedlist");if(!L)return;
  if(!c){L.innerHTML=`<div class="feed-empty">The feed is loading. Make sure you're online.</div>`;return}
- if(!c.user()){L.innerHTML=`<div class="feed-empty">Sign in to see thoughts and updates from everyone.<button class="btn" id="fjoin" style="max-width:280px;margin:14px auto 0">Sign in or join</button></div>`;$("fjoin").onclick=()=>openAccount();return}
- const f=c.feed();
- L.innerHTML=f.length?f.map(feedItem).join(""):`<div class="feed-empty">Nothing here yet. When someone finishes a reading or shares a thought, it shows up here.</div>`;
- L.querySelectorAll(".fi").forEach(x=>{if(feedIds.size&&!feedIds.has(x.dataset.id))x.classList.add("new")});feedIds=new Set(f.map(e=>e.id));
- L.querySelectorAll(".hb").forEach(b=>b.onclick=()=>heartTap(b));paintWeekTop();
- L.querySelectorAll("[data-own]").forEach(b=>b.onclick=()=>{const e=f.find(x=>x.id===b.dataset.own);if(!e)return;if(e.uid===c.user().uid){if(e.type==="hl"){if(confirm("Delete this post?"))c.deletePost(e.id)}else openThought(e.day,e)}else if(confirm("Remove this post from the feed?"))c.deletePost(e.id)});
+ if(!c.user()){const b=$("ffilt");if(b)b.remove();L.innerHTML=`<div class="feed-empty">Sign in to see thoughts and updates from everyone.<button class="btn" id="fjoin" style="max-width:280px;margin:14px auto 0">Sign in or join</button></div>`;$("fjoin").onclick=()=>openAccount();return}
+ const all=c.feed(),f=all.filter(feedMatch);paintFeedFilters();
+ L.innerHTML=f.length?f.map(feedItem).join(""):`<div class="feed-empty">${all.length&&feedF!=="all"?FF_EMPTY[feedF]:"Nothing here yet. When someone finishes a reading or shares a thought, it shows up here."}</div>`;
+ L.querySelectorAll(".fi").forEach(x=>{if(feedIds.size&&!feedIds.has(x.dataset.id))x.classList.add("new")});feedIds=new Set(all.map(e=>e.id));
+ paintWeekTop();wireFeed(L,f);
 }
 async function heartTap(b){const c=cloud();if(!c||!c.user())return;const id=b.dataset.id,on=!b.classList.contains("on");b.classList.toggle("on",on);b.classList.remove("pop");void b.offsetWidth;b.classList.add("pop");
  b.firstElementChild.outerHTML=on?ICON.heart:ICON.heartO;const sp=b.querySelector("span");sp.textContent=Math.max(0,(+sp.textContent||0)+(on?1:-1))||"";if(on){sfx("heart");hearts(b)}
@@ -2750,7 +2798,7 @@ document.documentElement.classList.toggle("duo",duoOn());
 ["gesturestart","gesturechange"].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
 document.addEventListener("touchmove",e=>{if(e.touches&&e.touches.length>1)e.preventDefault()},{passive:false});
 /* ---------- stay up to date ---------- */
-const BUILD="1795886695";
+const BUILD="1795888209";
 async function checkUpdate(){if(location.protocol!=="https:"||BUILD.startsWith("__"))return;try{const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"});if(!r.ok)return;const v=(await r.json()).v;
  if(v&&v!==BUILD){let tried="";try{tried=sessionStorage.getItem("nt30-upd")||""}catch(e){}if(tried===v)return;try{sessionStorage.setItem("nt30-upd",v)}catch(e){}save();setTimeout(()=>location.reload(),400)}}catch(e){}}
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")checkUpdate()});setTimeout(checkUpdate,1500);
@@ -3099,6 +3147,8 @@ function refLabel(refs){/* refs sorted within one chapter or many */
  return Object.keys(by).map(k=>{const [s,c]=k.split(".");const vs=by[k].sort((a,b)=>a-b);const parts=[];let a=vs[0],b=vs[0];
   for(let n=1;n<=vs.length;n++){if(vs[n]===b+1){b=vs[n];continue}parts.push(a===b?a:`${a}–${b}`);a=b=vs[n]}
   return `${BK[s].c===1?BK[s].n:BK[s].n+" "+c}:${parts.join(", ")}`}).join("; ")}
+function hlGroups(refs,same){const out=[];let g=null,prev=null;
+ sortRefs(refs).forEach(r=>{const p=refParts(r),q=prev&&refParts(prev);const nb=q&&q.s===p.s&&q.c===p.c&&p.v===q.v+1;if(g&&nb&&(!same||same(prev,r)))g.push(r);else{g=[r];out.push(g)}prev=r});return out}
 function sortRefs(a){return a.slice().sort((x,y)=>{const p=refParts(x),q=refParts(y);return BK[p.s].i-BK[q.s].i||p.c-q.c||p.v-q.v})}
 const plain=t=>String(t||"").replace(/[¶\[\]{}]/g,"").trim();
 const vHTML=(t,red)=>{let h=esc(String(t).replace(/¶/g,"")).replace(/\[/g,"<i>").replace(/\]/g,"</i>");return h.replace(/\{/g,red?'<span class="rl">':"<span>").replace(/\}/g,"</span>")};
@@ -3329,13 +3379,15 @@ function domText(t){return String(t||"").replace(/[¶\[\]{}]/g,"")}
 async function hlExcerpt(refs){const parts=await Promise.all(refs.map(async r=>{const h=st.hl[r];if(h&&!h.c&&h.p){const p=refParts(r),b=await loadBook(p.s),t=domText(((b.c[p.c-1]||[])[p.v-1])||"");return pseg(h).map(([a,e])=>t.slice(a,e).trim()).join(" … ")}return verseText(r)}));return parts.join(" ")}
 
 /* ---- highlights → feed (batched so a burst of highlights becomes one post per chapter) ---- */
-let HLQ={},hlqT=0;
+let HLQ={},hlqT=0,HLACT=0,hlLastQ=0;
 function queueHlFeed(r,c,text){if(st.share===false||st.hlFeed===false)return;const cl=cloud();if(!cl||!cl.user()||!cl.postHl)return;const p=refParts(r),k=chKey(p.s,p.c);
- HLQ[k]=HLQ[k]||{};if(c)HLQ[k][r]={c,t:text||null};else delete HLQ[k][r];clearTimeout(hlqT);hlqT=setTimeout(flushHlFeed,90000)}
+ const nowQ=Date.now();if(nowQ-hlLastQ>60)HLACT++;hlLastQ=nowQ;/* verses queued in the same tap share an action id */
+ HLQ[k]=HLQ[k]||{};if(c)HLQ[k][r]={c,t:text||null,g:HLACT};else delete HLQ[k][r];clearTimeout(hlqT);hlqT=setTimeout(flushHlFeed,90000)}
 async function flushHlFeed(){clearTimeout(hlqT);const q=HLQ;HLQ={};const cl=cloud();if(!cl||!cl.user()||!cl.postHl)return;
  for(const k of Object.keys(q)){const refs=sortRefs(Object.keys(q[k]).filter(r=>hcol(st.hl[r])));if(!refs.length)continue;
-  try{const parts=await Promise.all(refs.map(async r=>q[k][r].t||verseText(r)));const t=parts.join(" ");const col=q[k][refs[0]].c;
-   await cl.postHl({ref:refs[0],refs:refs.slice(0,60),label:refLabel(refs).slice(0,80),q:t.slice(0,1500),c:col,text:"",anon:!!st.anon})}catch(e){console.warn("[nt30] hl feed",e)}}}
+  try{const parts=await Promise.all(refs.map(async r=>q[k][r].t||verseText(r)));const tx={};refs.forEach((r,n)=>tx[r]=parts[n]);const t=parts.join(" ");const col=q[k][refs[0]].c;
+   const groups=hlGroups(refs,(a,b)=>q[k][a].g===q[k][b].g&&q[k][a].c===q[k][b].c).map(g=>({refs:g,c:q[k][g[0]].c,q:g.map(r=>tx[r]).join(" ").slice(0,1500)}));
+   await cl.postHl({ref:refs[0],refs:refs.slice(0,60),label:refLabel(refs).slice(0,80),q:t.slice(0,1500),c:col,text:"",anon:!!st.anon,groups})}catch(e){console.warn("[nt30] hl feed",e)}}}
 addEventListener("pagehide",()=>{if(Object.keys(HLQ).length)flushHlFeed()});document.addEventListener("visibilitychange",()=>{if(document.hidden&&Object.keys(HLQ).length)flushHlFeed()});
 function myChl(k){const o={};Object.keys(st.hl).forEach(r=>{const h=st.hl[r];if(hcol(h)&&r.startsWith(k+".")&&r.split(".").length===3)o[r.split(".")[2]]=h.at||Date.now()});return o}
 function pushChl(k){st.chlP=st.chlP||{};const c=cloud();if(!c||!c.user()||!c.setChl){st.chlP[k]=1;saveLocal();return}const m=st.hlShare?myChl(k):{};c.setChl(k,Object.keys(m).length?m:null).then(()=>{delete st.chlP[k];saveLocal()}).catch(e=>{st.chlP[k]=1;saveLocal();console.warn("[nt30] chl",e)})}
@@ -3355,7 +3407,8 @@ async function shareRefs(refs,tx,onCol){const c=cloud();if(!c||!c.user()){openAc
  s.querySelectorAll(".hlpick .hcb").forEach(b=>b.onclick=()=>{col=b.dataset.c;s.querySelectorAll(".hlpick .hcb").forEach(x=>x.setAttribute("aria-pressed",x===b));$("hlq").className="hlq k"+col});
  $("hlno").onclick=closeSheet;
  $("hlgo").onclick=async()=>{const g=$("hlgo");g.disabled=true;g.textContent="Sharing…";
-  try{await c.postHl({ref:sortRefs(refs)[0],refs:sortRefs(refs).slice(0,60),label:label.slice(0,80),q:t.slice(0,1500),c:col,text:$("hlt").value.trim().slice(0,1000),anon:$("hlanon").checked});if(onCol)onCol(col);else setHl(refs,col);closeSheet();clearSel();toast(`${ICON.check} Shared to the feed`);sfx("heart")}
+  try{const gs=hlGroups(refs);let groups=null;if(gs.length>1&&!tx){const tt=await Promise.all(sortRefs(refs).map(verseText)),m={};sortRefs(refs).forEach((r,n)=>m[r]=tt[n]);groups=gs.map(g=>({refs:g,c:col,q:g.map(r=>m[r]).join(" ").slice(0,1500)}))}
+   await c.postHl({ref:sortRefs(refs)[0],refs:sortRefs(refs).slice(0,60),label:label.slice(0,80),q:t.slice(0,1500),c:col,text:$("hlt").value.trim().slice(0,1000),anon:$("hlanon").checked,groups});if(onCol)onCol(col);else setHl(refs,col);closeSheet();clearSel();toast(`${ICON.check} Shared to the feed`);sfx("heart")}
   catch(e){console.warn(e);$("hlm").textContent="Couldn't share right now. Check your connection.";g.disabled=false;g.textContent="Share it"}};
  $("scrim").classList.add("show");s.classList.add("show")}
 
@@ -3480,7 +3533,7 @@ document.addEventListener("click",e=>{const b=e.target.closest(".ctabs button");
 let WT={at:0,list:null};
 async function weekTop(){const c=cloud();if(!c||!c.user()||!c.weekTop)return null;if(WT.list&&Date.now()-WT.at<6e5)return WT.list;try{WT.list=await c.weekTop();WT.at=Date.now()}catch(e){console.warn("[nt30] week",e);WT.list=WT.list||[]}return WT.list}
 async function paintWeekTop(){const L=$("feedlist");if(!L)return;const top=await weekTop();let box=$("wtop");if(!top||!top.length){if(box)box.remove();return}
- if(!box){box=document.createElement("div");box.id="wtop";box.className="card wtop";L.parentNode.insertBefore(box,L)}
+ if(!box){box=document.createElement("div");box.id="wtop";box.className="card wtop";L.parentNode.insertBefore(box,$("ffilt")||L)}
  const ts=await Promise.all(top.map(x=>verseText(x.r).catch(()=>"")));
  box.innerHTML=`<div class="lbl">${I9.mark} Most highlighted this week</div>${top.map((x,k)=>`<button class="wti" data-r="${x.r}"><span class="wtn">${k+1}</span><span><b>${esc(refLabel([x.r]))}</b><small>${esc(ts[k].length>110?ts[k].slice(0,110)+"…":ts[k])}</small></span><span class="wtc">${x.n} ${x.n===1?"person":"people"}</span></button>`).join("")}`;
  box.querySelectorAll(".wti").forEach(b=>b.onclick=()=>{const p=refParts(b.dataset.r);openReader({mode:"ch",s:p.s,c:p.c,v:b.dataset.r})})}
@@ -3754,7 +3807,7 @@ A.onAuthStateChanged(auth,async u=>{
  try{const a=await F.getDoc(F.doc(db,"meta","admin"));adminUid=a.exists()?a.data().uid:null}catch(e){}
  await push();if(window.NT9)window.NT9.flush();try{window.NTgate&&window.NTgate(true)}catch(e){}
  unsub.push(F.onSnapshot(F.query(F.collection(db,"members"),F.where("share","==",true)),qs=>{members=qs.docs.map(x=>({id:x.id,...x.data()}));window.NT.members()},e=>console.warn("[nt30] board failed",e)));
- unsub.push(F.onSnapshot(F.query(F.collection(db,"feed"),F.orderBy("at","desc"),F.limit(120)),qs=>{feed=qs.docs.map(x=>({id:x.id,...x.data({serverTimestamps:"estimate"})}));window.NT.feed()},e=>console.warn("[nt30] feed failed",e)));
+ unsub.push(F.onSnapshot(F.query(F.collection(db,"feed"),F.orderBy("at","desc"),F.limit(300)),qs=>{feed=qs.docs.map(x=>({id:x.id,...x.data({serverTimestamps:"estimate"})}));window.NT.feed()},e=>console.warn("[nt30] feed failed",e)));
  window.NT.changed();
 });
 const ev=(id,data)=>F.setDoc(F.doc(db,"feed",id),data);
@@ -3782,7 +3835,10 @@ window.NTCloud={ready:true,user:()=>cur,list:()=>{const me=cur&&cur.uid;const g=
  setChl:(k,m)=>{if(!cur)return Promise.reject(new Error("signed out"));const d={_t:F.serverTimestamp()};d[cur.uid]=m?m:F.deleteField();return F.setDoc(F.doc(db,"chl",k),d,{mergeFields:[cur.uid,"_t"]})},
  getChl:async ks=>{const out={};await Promise.all(ks.map(async k=>{const counts={};try{const x=await F.getDoc(F.doc(db,"chl",k));if(x.exists()){const d=x.data();Object.keys(d).forEach(u=>{if(u==="_t"||(cur&&u===cur.uid)||!d[u]||typeof d[u]!=="object")return;Object.keys(d[u]).forEach(v=>counts[v]=(counts[v]||0)+1)})}}catch(e){}out[k]={at:Date.now(),counts}}));return out},
  weekTop:async()=>{const since=Date.now()-7*864e5;const qs=await F.getDocs(F.query(F.collection(db,"chl"),F.where("_t",">=",F.Timestamp.fromMillis(since))));const cnt={};qs.docs.forEach(x=>{const d=x.data();Object.keys(d).forEach(u=>{if(u==="_t"||!d[u]||typeof d[u]!=="object")return;Object.keys(d[u]).forEach(v=>{if(+d[u][v]>=since){const r=x.id+"."+v;cnt[r]=(cnt[r]||0)+1}})})});return Object.entries(cnt).filter(e=>e[1]>=2).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([r,n])=>({r,n}))},
- postHl:async o=>{const g=window.NT.get();await F.addDoc(F.collection(db,"feed"),{uid:cur.uid,...who(g,o.anon),type:"hl",ref:o.ref,refs:o.refs,label:o.label,q:o.q,c:o.c,text:o.text||"",p:g.p||"full",at:F.serverTimestamp(),hearts:[]})},
+ postHl:async o=>{const g=window.NT.get();const d={uid:cur.uid,...who(g,o.anon),type:"hl",ref:o.ref,refs:o.refs,label:o.label,q:o.q,c:o.c,text:o.text||"",p:g.p||"full",at:F.serverTimestamp(),hearts:[]};
+  const gs=Array.isArray(o.groups)&&o.groups.length>1?o.groups.slice(0,30).map(x=>({refs:x.refs.slice(0,60),c:x.c,q:String(x.q||"").slice(0,1500)})):null;
+  if(gs){try{await F.addDoc(F.collection(db,"feed"),{...d,groups:gs});return}catch(e){if(!/permission/i.test(String(e&&(e.code||e.message))))throw e;console.warn("[nt30] groups field refused, posting without it")}}
+  await F.addDoc(F.collection(db,"feed"),d)},
  adminReader:async()=>{if(!admin)throw new Error("not admin");const [ms,cs]=await Promise.all([F.getDocs(F.collection(db,"members")),F.getDocs(F.collection(db,"chl"))]);const cnt={};cs.docs.forEach(x=>{const d=x.data();Object.keys(d).forEach(u=>{if(u==="_t"||!d[u]||typeof d[u]!=="object")return;Object.keys(d[u]).forEach(v=>{const r=x.id+"."+v;cnt[r]=(cnt[r]||0)+1})})});return{members:ms.docs.map(x=>x.data()),top:Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([r,n])=>({r,n}))}},
  savePush:data=>cur?F.setDoc(F.doc(db,"push",cur.uid),{...data,updated:F.serverTimestamp()},{merge:true}):null};
 window.NT.changed();
