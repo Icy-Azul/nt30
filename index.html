@@ -2675,7 +2675,7 @@ document.documentElement.classList.toggle("duo",duoOn());
 ["gesturestart","gesturechange"].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
 document.addEventListener("touchmove",e=>{if(e.touches&&e.touches.length>1)e.preventDefault()},{passive:false});
 /* ---------- stay up to date ---------- */
-const BUILD="1795832389";
+const BUILD="1795833385";
 async function checkUpdate(){if(location.protocol!=="https:"||BUILD.startsWith("__"))return;try{const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"});if(!r.ok)return;const v=(await r.json()).v;
  if(v&&v!==BUILD){let tried="";try{tried=sessionStorage.getItem("nt30-upd")||""}catch(e){}if(tried===v)return;try{sessionStorage.setItem("nt30-upd",v)}catch(e){}save();setTimeout(()=>location.reload(),400)}}catch(e){}}
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")checkUpdate()});setTimeout(checkUpdate,1500);
@@ -2782,13 +2782,13 @@ function acctForm(mode,host,onDone){
   <div class="omsg" id="omsg" aria-live="polite"></div>
   <button class="btn" id="ogo">${isNew?"Create account":"Sign in"}</button>
   <button class="olink" id="oswap">${isNew?"I already have an account":"I'm new, create an account"}</button>
-  ${isNew?"":`<p class="nmsg" style="text-align:center">Forgot your password? Text Shantz and he can reset it.</p>`}`;
+  ${isNew?"":`<button class="olink" id="oforgot" style="display:block;margin:10px auto 0">Forgot your password?</button><div class="ohint" id="ofnote" hidden style="margin-top:10px">I'm sorry you're having a hard time logging in. Please let me know if you continue to have issues and I'll be happy to help!<br><b>Shantz</b></div>`}`;
  $("ouser").addEventListener("input",e=>{const v=e.target.value.toLowerCase().replace(/\s+/g,".");if(v!==e.target.value)e.target.value=v});
  $("opeek").onclick=()=>{const p=$("opw"),q=$("opw2"),sh=p.type==="password";p.type=sh?"text":"password";if(q)q.type=p.type;$("opeek").textContent=sh?"Hide":"Show"};
- $("oswap").onclick=()=>acctForm(isNew?"in":"new",host,onDone);
+ $("oswap").onclick=()=>acctForm(isNew?"in":"new",host,onDone);const fg=$("oforgot");if(fg)fg.onclick=()=>{$("ofnote").hidden=false;fg.style.display="none"};
  const go=async()=>{const b=$("ogo");b.disabled=true;$("omsg").textContent="";
   try{await doAccount(mode,{name:isNew?$("oname").value:"",user:$("ouser").value,pw:$("opw").value,pw2:isNew?$("opw2").value:""});onDone()}
-  catch(e){const m=String(e&&e.code||e&&e.message||e);
+  catch(e){const m=String(e&&e.code||e&&e.message||e);if(!isNew&&/invalid-credential|wrong-passw|user-not-found|too-many/.test(m)){const fn=$("ofnote"),fg=$("oforgot");if(fn)fn.hidden=false;if(fg)fg.style.display="none"}
    $("omsg").textContent=m.includes("email-already-in-use")?"That username is taken. Try another one.":m.includes("invalid-credential")||m.includes("wrong-password")||m.includes("user-not-found")||m.includes("invalid-email")?"That username and password don't match.":m.includes("weak-password")?"Pick a longer password (at least 6 characters).":m.includes("too-many-requests")?"Too many tries. Wait a minute and try again.":m==="offline"||m.includes("network")?"Can't connect right now. Check your internet and try again.":(e&&e.message)||"Something went wrong. Try again."}
   b.disabled=false};
  $("ogo").onclick=go;host.querySelectorAll("input").forEach(i=>i.addEventListener("keydown",e=>{if(e.key==="Enter")go()}));
@@ -2832,7 +2832,7 @@ function startOnboarding(only){
    $("cj").onclick=()=>{mode="join";step=0;scr="join";draw()};$("cr").onclick=()=>{scr="signin";draw()};return}
   if(scr==="signin"){
    if(!cloud()&&window.NT_FB&&!draw._w){B.innerHTML=`<h1 id="onbT">Connecting…</h1><p class="lead">Getting things ready.</p>`;let t=0;const iv=setInterval(()=>{t+=300;if(cloud()||t>8000){clearInterval(iv);draw._w=true;draw()}},300);return}
-   if(!cloud()){B.innerHTML=`<h1 id="onbT">Can't connect</h1><p class="lead">Check your internet, then try again. You can also start without signing in and sign in later in Settings.</p>`;F.innerHTML=`<button class="btn" id="onext">Start without signing in</button>`;$("onext").onclick=()=>{mode="join";scr="join";step=0;draw()};return}
+   if(!cloud()){B.innerHTML=`<h1 id="onbT">Can't connect</h1><p class="lead">Check your internet, then try again. </p>`;F.innerHTML=`<button class="btn" id="onext">Try again</button>`;$("onext").onclick=()=>{draw._w=false;draw()};return}
    acctForm("in",B,()=>{if(!st.nt.on&&pushOK()&&(!isIOS()||standalone())){mode="join";step=JOIN.indexOf("notif");scr="join";draw._ret=true;draw()}else finish()});
    const sw=$("oswap");if(sw)sw.onclick=()=>{mode="join";scr="join";step=0;draw()};return}
   const k=JOIN[step];
@@ -2850,8 +2850,7 @@ function startOnboarding(only){
   }else if(k==="acct"){
    if(cloud()&&cloud().user()){B.innerHTML=`<h1 id="onbT">You're signed in</h1><p class="lead">Signed in as ${esc(cloud().user().name||st.n)}. Your progress saves to your account.</p>`;nx();return}
    if(!cloud()&&window.NT_FB&&!draw._waited){B.innerHTML=`<h1 id="onbT">Connecting…</h1><p class="lead">Getting things ready.</p>`;F.innerHTML="";let t=0;const iv=setInterval(()=>{t+=300;if(cloud()||t>8000){clearInterval(iv);draw._waited=true;draw()}},300);return}
-   if(!cloud()){B.innerHTML=`<h1 id="onbT">What's your name?</h1><p class="lead">Can't connect right now. You can sign in later in Settings.</p><label class="ofield"><span>Your name</span><input id="oname2" value="${esc(st.n||"")}" placeholder="First and last name"></label>`;
-    F.innerHTML=`<button class="btn" id="onext">Next</button>`;$("onext").onclick=()=>{const v=$("oname2").value.trim();if(v){st.n=v;$("nm").value=v;save()}step++;draw()};return}
+   if(!cloud()){B.innerHTML=`<h1 id="onbT">Can't connect</h1><p class="lead">You need the internet to create your account. Check your connection, then try again.</p>`;F.innerHTML=`<button class="btn" id="onext">Try again</button>`;$("onext").onclick=()=>{draw._waited=false;draw()};return}
    F.innerHTML="";acctForm("new",B,()=>{step++;draw()});
    const sw=$("oswap");if(sw)sw.onclick=()=>{scr="signin";mode=null;draw()};
   }else if(k==="notif"){
@@ -2878,10 +2877,23 @@ function startOnboarding(only){
   }
  };
  const close=()=>{o.hidden=true;document.body.style.overflow="";render();renderAcct();setView("home",true);talk("greet");move("cheer")};
- const finish=()=>{try{localStorage.setItem(OB,"1");localStorage.setItem(LS,"1")}catch(e){}close()};
+ const finish=()=>{try{localStorage.setItem(OB,"1");localStorage.setItem(LS,"1")}catch(e){}close();setTimeout(gateCheck,60)};
  draw();
 }
 
+
+/* ---- sign-in required ---- */
+let GATE=false,AUTHR=false;
+function authed(){const c=cloud();return !!(c&&c.user())}
+function gateShow(offline){const o=$("onb");if(!o)return;if(GATE&&!offline&&$("ogo"))return;GATE=true;closeSheet();o.hidden=false;document.body.style.overflow="hidden";o.classList.add("gate");
+ o.innerHTML=`<div class="onb-in"><div class="onb-top"><span></span><div class="onb-dots"></div></div><div class="onb-body" id="obody"></div></div>`;const B=$("obody");
+ if(offline){B.innerHTML=`<h1 id="onbT">Connect to sign in</h1><p class="lead">Check your internet connection, then try again. You'll sign in once, and your progress is saved to your account.</p><button class="btn" id="gretry">Try again</button>`;$("gretry").onclick=()=>location.reload();return}
+ acctForm(st.owner?"in":"new",B,gateHide)}
+function gateHide(){GATE=false;const o=$("onb");if(!o)return;o.hidden=true;o.classList.remove("gate");document.body.style.overflow="";renderAcct();try{render();if(view==="home")renderDash()}catch(e){}}
+function gateCheck(){if(authed()){if(GATE)gateHide();return}if(!AUTHR)return;const o=$("onb");if(o&&!o.hidden&&!GATE)return;if(!GATE||!$("ogo"))gateShow(false)}
+window.NTgate=v=>{AUTHR=true;if(v){if(GATE)gateHide()}else gateCheck()};
+setInterval(()=>{if(!authed())gateCheck()},1500);
+setTimeout(()=>{if(!cloud()&&!st.owner){const o=$("onb");if(o&&!o.hidden&&!GATE)return;gateShow(true)}},10000);
 function openSettings(){
  park();const s=$("sheet");s.style.removeProperty("--c");s.style.removeProperty("--d");
  s.innerHTML=`<div class="grab"></div>`;const B=$("setbody");s.appendChild(B);sxInit();sxGo(null,true);renderAcct();renderPrefs();
@@ -3455,7 +3467,7 @@ const flush=()=>{if(timer){clearTimeout(timer);timer=null;push()}};document.addE
 const stop=()=>{unsub.forEach(f=>{try{f()}catch(e){}});unsub=[]};
 A.onAuthStateChanged(auth,async u=>{
  stop();members=[];feed=[];admin=false;loaded=false;
- if(!u){cur=null;window.NT.changed();return}
+ if(!u){cur=null;window.NT.changed();try{window.NTgate&&window.NTgate(false)}catch(e){}return}
  if(window.NT9)window.NT9.own(u.uid);
  cur={uid:u.uid,name:u.displayName||"",user:(u.email||"").split("@")[0]};
  for(let tries=0;!loaded;tries++){if(tries)await new Promise(r=>setTimeout(r,Math.min(20000,500*2**tries)));if(!cur||cur.uid!==u.uid)return;
@@ -3467,7 +3479,7 @@ A.onAuthStateChanged(auth,async u=>{
  admin=(u.email||"").toLowerCase()===ADMIN_EMAIL;
  if(admin){try{await F.setDoc(F.doc(db,"meta","admin"),{uid:u.uid})}catch(e){console.warn("[nt30] admin flag",e)}}
  try{const a=await F.getDoc(F.doc(db,"meta","admin"));adminUid=a.exists()?a.data().uid:null}catch(e){}
- await push();if(window.NT9)window.NT9.flush();
+ await push();if(window.NT9)window.NT9.flush();try{window.NTgate&&window.NTgate(true)}catch(e){}
  unsub.push(F.onSnapshot(F.query(F.collection(db,"members"),F.where("share","==",true)),qs=>{members=qs.docs.map(x=>({id:x.id,...x.data()}));window.NT.members()},e=>console.warn("[nt30] board failed",e)));
  unsub.push(F.onSnapshot(F.query(F.collection(db,"feed"),F.orderBy("at","desc"),F.limit(120)),qs=>{feed=qs.docs.map(x=>({id:x.id,...x.data({serverTimestamps:"estimate"})}));window.NT.feed()},e=>console.warn("[nt30] feed failed",e)));
  window.NT.changed();
