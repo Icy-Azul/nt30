@@ -1388,10 +1388,10 @@ details.gl9 .rbtn{min-height:0;padding:10px 12px}details.gl9 .rbtn .ri{display:n
 .rdr.imm.peek .rtop{transform:none}
 .rdr.imm .rpager{transform:translateY(105%);transition:transform .28s ease}
 .rdr.imm .rbody{padding-top:calc(18px + env(safe-area-inset-top))}
-.rdr.imm.pages .rbody,.rdr.imm.pages .rcurl,.rdr.imm.pages .rflapw,.rdr.imm.pages .rflsh,.rdr.imm.pages .rcunder{bottom:calc(50px + env(safe-area-inset-bottom))}.rdr.imm.book .rgutter{top:0;bottom:0}.rdr.imm.pages .rcunder,.rdr.imm.pages .rflsh,.rdr.imm.pages .rflapw{top:var(--rtop)}
-.rdr.imm.pages .rbody{padding-top:12px}
-.rdr.imm .rexit{display:grid;place-items:center;position:fixed;right:max(10px,env(safe-area-inset-right));bottom:calc(10px + env(safe-area-inset-bottom));z-index:5;width:38px;height:38px;border-radius:50%;border:0;background:var(--rbar);color:inherit;opacity:.45;box-shadow:0 1px 6px rgba(0,0,0,.15);cursor:pointer}
-.rdr.imm .rexit:active,.rdr.imm .rexit:hover{opacity:1}.rdr.imm .rexit svg{width:20px;height:20px}
+.rdr.imm.pages .rbody,.rdr.imm.pages .rcurl,.rdr.imm.pages .rflapw,.rdr.imm.pages .rflsh,.rdr.imm.pages .rcunder{top:0!important;bottom:0!important}.rdr.imm.pages .rbody,.rdr.imm.pages .rcurl{padding-top:calc(22px + env(safe-area-inset-top))!important;padding-bottom:calc(30px + env(safe-area-inset-bottom) * .6)!important}.rdr.imm.book .rgutter{top:0;bottom:0}
+
+.rdr.imm .rexit{display:grid;place-items:center;position:fixed;right:max(6px,env(safe-area-inset-right));bottom:max(4px,calc(env(safe-area-inset-bottom) * .5 - 14px));z-index:5;width:30px;height:30px;border-radius:50%;border:0;background:var(--rbar);color:inherit;opacity:.45;box-shadow:0 1px 6px rgba(0,0,0,.15);cursor:pointer}
+.rdr.imm .rexit:active,.rdr.imm .rexit:hover{opacity:1}.rdr.imm .rexit svg{width:16px;height:16px}
 .rfs svg{width:20px;height:20px}
 .toast9.show{pointer-events:auto}.toast9 .tbtn{margin-left:10px;border:0;border-radius:999px;padding:4px 10px;font:inherit;font-weight:700;background:rgba(255,255,255,.18);color:inherit;cursor:pointer}
 .rdef{padding:2px 2px 10px;font-size:16px;line-height:1.45}.rdef p{margin:0}.rdef small{display:block;margin-top:6px;opacity:.65;font-size:12.5px}.rdef .rdn{opacity:.7}.rsel .rdw{font-family:var(--f-serif,Georgia,serif);font-size:19px}.rdefb a.rsa{text-decoration:none;color:inherit}
@@ -2735,7 +2735,7 @@ document.documentElement.classList.toggle("duo",duoOn());
 ["gesturestart","gesturechange"].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
 document.addEventListener("touchmove",e=>{if(e.touches&&e.touches.length>1)e.preventDefault()},{passive:false});
 /* ---------- stay up to date ---------- */
-const BUILD="1795882314";
+const BUILD="1795882785";
 async function checkUpdate(){if(location.protocol!=="https:"||BUILD.startsWith("__"))return;try{const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"});if(!r.ok)return;const v=(await r.json()).v;
  if(v&&v!==BUILD){let tried="";try{tried=sessionStorage.getItem("nt30-upd")||""}catch(e){}if(tried===v)return;try{sessionStorage.setItem("nt30-upd",v)}catch(e){}save();setTimeout(()=>location.reload(),400)}}catch(e){}}
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")checkUpdate()});setTimeout(checkUpdate,1500);
@@ -3493,7 +3493,7 @@ function layoutPages(){
  const on=PM();RDR.classList.toggle("pages",on);RDR.classList.toggle("book",on&&bookMode());
  if(!pager){pager=document.createElement("div");pager.className="rpager";pager.innerHTML=`<button class="rpg" data-d="-1" aria-label="Previous page">${I9.back}</button><span id="rpgt"></span><button class="rpg" data-d="1" aria-label="Next page">${I9.next}</button>`;RDR.appendChild(pager);pager.querySelectorAll(".rpg").forEach(b=>b.onclick=()=>goPage(PG.i+(+b.dataset.d),true));gutter=document.createElement("i");gutter.className="rgutter";RDR.appendChild(gutter)}
  if(!on){RDR.style.removeProperty("--rtop");return}
- RDR.scrollTop=0;const top=RDR.querySelector(".rtop");RDR.style.setProperty("--rtop",RDR.classList.contains("imm")?"calc(18px + env(safe-area-inset-top))":top.offsetHeight+"px");
+ RDR.scrollTop=0;const top=RDR.querySelector(".rtop");RDR.style.setProperty("--rtop",RDR.classList.contains("imm")?"0px":top.offsetHeight+"px");
  const B=$("rbody");PG.step=B.clientWidth;void B.offsetHeight;PG.n=Math.max(1,Math.round(B.scrollWidth/PG.step));if(PG.i>=PG.n)PG.i=PG.n-1;B.scrollLeft=PG.i*PG.step;updPager();
 }
 
