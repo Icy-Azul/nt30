@@ -1840,16 +1840,17 @@ html[data-skin=refined] body{background:#e2cc9b url(art/journey4.webp) center to
   <div class="phead"><h2>Help</h2><p>How everything works</p></div>
   <section class="card"><details open><summary>Your daily reading</summary><ol class="steps" style="margin-top:6px">
    <li><span>On Home, tap <span class="k">Start today's reading</span>. The chapters open right in the app.</span></li>
-   <li><span>At the end, tap <span class="k">I finished Day</span>. That checks off the day.</span></li>
+   <li><span>At the end, tap <span class="k">Mark complete</span>. That checks off the day.</span></li>
+   <li><span>Rather listen? Tap <span class="k">Listen to today's reading</span> on Home, or the headphones at the top of the reader.</span></li>
    <li><span>Prefer Gospel Library? Tap <span class="k">Day details</span>, then <span class="k">Open in Gospel Library</span>. When you're done, come back and tap <span class="k">I read it!</span></span></li>
    <li><span>Write down a thought if you'd like. It shows in the feed.</span></li></ol></details></section>
   <section class="card"><details><summary>Add the app to your Home Screen</summary><div id="hshelp" style="margin-top:10px"></div></details></section>
-  <section class="card"><details><summary>Reading in the app</summary><p>Tap <span class="k">Aa</span> at the top to change the text size, background, font, spacing, and layout. You can also turn on red letters for the words of Jesus. The small headphones button plays a recording of the chapter read by LibriVox volunteers (free, public domain recordings) and keeps going to the next chapter. Tap any verse while it plays to jump there. If you hear nothing, check that your phone isn't on silent.</p><p>Tap any verse to highlight it in one of four colors, copy it, or share it to the feed. Your highlights are saved to your account and show up in <span class="k">Library</span>, then <span class="k">My highlights</span>.</p><p>A faint dotted underline means others in the community highlighted that verse. Only counts are shown, never names. You can turn this off in Settings.</p></details></section>
-  <section class="card"><details><summary>The Library</summary><p>Open any book and chapter of the New Testament anytime. Green chapters are ones you've read. A chapter counts as read when you scroll to the end of it. Only finishing a day's reading checks off the day.</p></details></section>
+  <section class="card"><details><summary>Reading in the app</summary><p>Tap <span class="k">Aa</span> at the top to change the text size, background, font, spacing, and layout. You can also turn on red letters for the words of Jesus. The headphones button plays a recording of the chapter read by LibriVox volunteers (free, public domain recordings) and keeps going to the next chapter. Tap any verse while it plays to jump there. Prefer the built-in voice? Switch it under <span class="k">Aa</span>, then <span class="k">Listening</span>. If you hear nothing, check that your phone isn't on silent.</p><p>Tap any verse to highlight it in one of four colors, copy it, or share it to the feed. Your highlights are saved to your account and show up in <span class="k">Library</span>, then <span class="k">My highlights</span>. Highlights also post to the feed on their own. Turn off <span class="k">Share my highlights</span> in Settings if you'd rather keep them to yourself.</p><p>A faint dotted underline means others in the community highlighted that verse. Only counts are shown, never names. You can turn this off in Settings.</p></details></section>
+  <section class="card"><details><summary>The Library</summary><p>Open any book and chapter of the New Testament anytime. Green chapters are ones you've read. A chapter counts as read when you scroll to the end of it or listen all the way through. Only finishing a day's reading checks off the day.</p></details></section>
   <section class="card"><details><summary>Nothing is locked</summary><p>You can open any day, read ahead, or go back anytime. If you fall behind, the Daily tracker offers two ways to catch up: doubling up for a few days, or shifting your schedule.</p></details></section>
   <section class="card"><details><summary>Full or Essentials</summary><p><b>Full</b> covers all 260 chapters, about 9 a day. <b>Essentials</b> covers 89 key chapters, about 3 a day, and still tells the whole story. Switch anytime in Settings. Days you've checked off stay checked.</p></details></section>
-  <section class="card"><details><summary>Community</summary><p>The People tab shows everyone in the challenge, how far along they are, and who read today. The Feed shows when someone finishes a reading, plus thoughts and highlights people share. Tap the heart to cheer someone on.</p></details></section>
-  <section class="card"><details><summary>Privacy</summary><p>Turn off <span class="k">Share my progress</span> in Settings to hide yourself from the People tab and stop posting when you finish. Turn on <span class="k">Post anonymously</span> to show "Anonymous" instead of your name in the feed, or check the box on any single thought. Thoughts only post when you choose to share them, and you can edit or delete them anytime.</p></details></section>
+  <section class="card"><details><summary>Community</summary><p>The People tab shows everyone in the challenge, how far along they are, and who read today. The Feed shows when someone finishes a reading, plus thoughts and highlights people share. Use the buttons at the top to show only thoughts, highlights or progress. Tap the heart to cheer someone on.</p></details></section>
+  <section class="card"><details><summary>Privacy</summary><p>Turn off <span class="k">Show my progress</span> in Settings to hide yourself from the People tab and stop posting when you finish. Turn on <span class="k">Post anonymously</span> to show "Anonymous" instead of your name in the feed, or check the box on any single thought. Thoughts only post when you choose to share them, and you can edit or delete them anytime.</p></details></section>
   <section class="card"><details><summary>Notifications</summary><p>On iPhone, add the app to your Home Screen and open it from there first. Then go to Settings and tap <span class="k">Turn on notifications</span>. You can choose a reminder time, or turn them off anytime.</p></details></section>
   <section class="card"><details><summary>Switching phones</summary><p>Sign in with your username and password on the new phone. Your progress comes with you. Forgot your password? Text Shantz and he can reset it.</p></details></section>
   <section class="card"><details><summary>Questions or feedback?</summary><p>Text Shantz! He built this app and would love to hear what could be better.</p></details></section>
@@ -2801,7 +2802,7 @@ document.documentElement.classList.toggle("duo",duoOn());
 ["gesturestart","gesturechange"].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
 document.addEventListener("touchmove",e=>{if(e.touches&&e.touches.length>1)e.preventDefault()},{passive:false});
 /* ---------- stay up to date ---------- */
-const BUILD="1795892673";
+const BUILD="1795892867";
 async function checkUpdate(){if(location.protocol!=="https:"||BUILD.startsWith("__"))return;try{const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"});if(!r.ok)return;const v=(await r.json()).v;
  if(v&&v!==BUILD){let tried="";try{tried=sessionStorage.getItem("nt30-upd")||""}catch(e){}if(tried===v)return;try{sessionStorage.setItem("nt30-upd",v)}catch(e){}save();setTimeout(()=>location.reload(),400)}}catch(e){}}
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")checkUpdate()});setTimeout(checkUpdate,1500);
@@ -2991,13 +2992,14 @@ function startOnboarding(only){
     $("onskip").onclick=nxt}
    else nx();
   }else{
-   B.innerHTML=`<h1 id="onbT">How it works</h1><p class="lead">Everyone starts together on Tuesday, December 1.</p>
+   const pre=diffDays()<0;
+   B.innerHTML=`<h1 id="onbT">How it works</h1><p class="lead">${pre?"Everyone starts together on Tuesday, December 1.":"The challenge runs December 1 to 30."} Nothing is locked, so read ahead or catch up anytime.</p>
     <div class="walk">
-     <div class="wk"><span class="ic">1</span><div><b>Open today's reading</b><span>From Home, tap "Start today's reading." It opens right in Gospel Library.</span></div></div>
-     <div class="wk"><span class="ic">2</span><div><b>Tap "I read it!"</b><span>Check it off to grow your streak.</span></div></div>
-     <div class="wk"><span class="ic">3</span><div><b>Share a thought</b><span>Write down what stood out to you. It shows in the feed.</span></div></div>
-     <div class="wk"><span class="ic">4</span><div><b>Read at your own pace</b><span>Nothing is locked. Read ahead, go back, or catch up anytime.</span></div></div>
-     <div class="wk"><span class="ic">5</span><div><b>Read together</b><span>See everyone's progress and cheer each other on.</span></div></div>
+     <div class="wk"><span class="ic">1</span><div><b>Open today's reading</b><span>On Home, tap "Start today's reading." The chapters open right in the app.</span></div></div>
+     <div class="wk"><span class="ic">2</span><div><b>Read or listen</b><span>Tap the headphones to hear it read aloud, or Aa to change the text.</span></div></div>
+     <div class="wk"><span class="ic">3</span><div><b>Tap "Mark complete"</b><span>It's at the end. It checks off the day and grows your streak.</span></div></div>
+     <div class="wk"><span class="ic">4</span><div><b>Highlight what stands out</b><span>Tap any verse to highlight, copy, or share it.</span></div></div>
+     <div class="wk"><span class="ic">5</span><div><b>Read together</b><span>In Community, see who read today and cheer each other on.</span></div></div>
     </div>`;
    nx("Start reading");
   }
