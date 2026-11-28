@@ -1252,8 +1252,11 @@ mark.hm{color:inherit;border-radius:3px;padding:.06em 0;-webkit-box-decoration-b
 .rplay{visibility:hidden}.rplay.show{transform:none;visibility:visible}
 .rsel.show~.rplay{transform:translateY(150%)}
 .rpi svg{width:18px;height:18px;color:var(--racc)}
-.rpt{flex:1;min-width:0}.rpt small{display:block;font-size:11px;color:var(--rmute);font-weight:700}.rpt b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rpt{flex:1;min-width:0}.rpt small{display:block;font-size:11px;color:var(--rmute);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rpt b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rpbtn{border:0;background:var(--rchip);color:var(--rink);width:40px;height:40px;border-radius:50%;display:grid;place-items:center;cursor:pointer;font:800 12px var(--f-sans)}.rpbtn svg{width:16px;height:16px}
+.glink.dlis{display:flex;align-items:center;justify-content:center;gap:7px}.glink.dlis svg{width:17px;height:17px}
+.rplay{position:fixed;overflow:hidden}.rpbar{position:absolute;left:0;right:0;bottom:0;height:14px;cursor:pointer;display:block}.rpbar i{position:absolute;left:18px;right:18px;bottom:4px;height:3px;border-radius:2px;background:var(--rline)}.rpbar b{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:2px;background:var(--racc)}
+.rpbtn.rpb15 svg{width:19px;height:19px}
 /* reader settings sheet */
 .rfs{display:flex;align-items:center;gap:12px}
 .rfs button{border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px;width:52px;height:48px;font-family:Georgia,serif;cursor:pointer}
@@ -2569,11 +2572,11 @@ function renderDash(){
  const tdone=df>=0&&df<30&&done(ci),next=firstUnread();
  let today;
  if(n>=30)today=`<div class="lbl">${ICON.star} Challenge complete</div><h3>You read the whole ${st.p==="ess"?"Essentials path":"New Testament"}!</h3><p class="hl">Merry Christmas. See your recap and the thoughts you wrote.</p><button class="btn" id="dgo">See my recap</button>`;
- else if(df<0)today=`<div class="lbl">Starts ${df===-1?"tomorrow":"Tuesday, Dec 1"}<span class="pill">${-df} ${df===-1?"day":"days"} to go</span></div><h3>Day 1 · ${esc(DAYS[0].t)}</h3><p class="hl">${esc(hlFor(0))}</p>${todayMeta(0)}<button class="btn ghost" id="dgo">Preview Day 1</button>`;
+ else if(df<0)today=`<div class="lbl">Starts ${df===-1?"tomorrow":"Tuesday, Dec 1"}<span class="pill">${-df} ${df===-1?"day":"days"} to go</span></div><h3>Day 1 · ${esc(DAYS[0].t)}</h3><p class="hl">${esc(hlFor(0))}</p>${todayMeta(0)}<button class="btn ghost" id="dgo">Preview Day 1</button><button class="glink dlis" id="dlisten"><svg viewBox="0 0 24 24"><path d="M4 14v-2a8 8 0 0116 0v2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="3" y="13" width="5" height="7" rx="2" fill="currentColor"/><rect x="16" y="13" width="5" height="7" rx="2" fill="currentColor"/></svg> Listen to Day 1</button>`;
  else if(df>=30)today=`<div class="lbl">The 30 days are over</div><h3>${30-n} ${30-n===1?"reading":"readings"} left</h3><p class="hl">Keep going at your own pace. Next up: Day ${next+1}, ${esc(DAYS[next].t)}.</p><button class="btn" id="dgo">Open Day ${next+1}</button>`;
  else if(tdone)today=`<div class="lbl">Today · Day ${ci+1}<span class="pill done">Done</span></div><h3>${esc(DAYS[ci].t)}</h3><div class="donebadge">${ICON.check} You read today!</div>
   <div class="acts">${ms.length?`<button class="mini go" id="dcu">Catch up (${ms.length})</button>`:""}${next>ci&&next<30?`<button class="mini go" id="dahead">Read ahead: Day ${next+1}</button>`:""}<button class="mini go" id="dthought">${ICON.pen} Write a thought</button></div>`;
- else today=`<div class="lbl">Today · Day ${ci+1} of 30${ms.length?`<span class="pill miss">${ms.length} to catch up</span>`:""}</div><h3>${esc(DAYS[ci].t)}</h3><p class="hl">${esc(hlFor(ci))}</p>${todayMeta(ci)}<button class="btn" id="dgo">${dayReadCount(ci)>0||resumeFor(ci)?"Continue today's reading":"Start today's reading"}</button><button class="glink" id="dgl">Day details · Open in Gospel Library</button>`;
+ else today=`<div class="lbl">Today · Day ${ci+1} of 30${ms.length?`<span class="pill miss">${ms.length} to catch up</span>`:""}</div><h3>${esc(DAYS[ci].t)}</h3><p class="hl">${esc(hlFor(ci))}</p>${todayMeta(ci)}<button class="btn" id="dgo">${dayReadCount(ci)>0||resumeFor(ci)?"Continue today's reading":"Start today's reading"}</button><button class="glink dlis" id="dlisten"><svg viewBox="0 0 24 24"><path d="M4 14v-2a8 8 0 0116 0v2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="3" y="13" width="5" height="7" rx="2" fill="currentColor"/><rect x="16" y="13" width="5" height="7" rx="2" fill="currentColor"/></svg> Listen to today's reading</button><button class="glink" id="dgl">Day details · Open in Gospel Library</button>`;
  const dots=Array.from({length:30},(_,i)=>`<i class="${done(i)?"g":""}${i===ci&&df>=0&&df<30?" t":""}" style="animation-delay:${200+i*22}ms"></i>`).join("");
  const me=`<div class="card dc me"><div class="lbl">My progress · ${pathName(st.p)}</div><div class="mrow"><div class="ring">${ringSvg(n/30)}<b>${n}<small>of 30</small></b></div>
   <div class="facts"><div class="fct">${FLAME}${sk} day streak</div><div class="fct">${STAR}${n} ${n===1?"day":"days"} read</div><div class="fct" style="color:var(--mute)">${ms.length?`${ms.length} to catch up`:df>=0?"Right on track":"Ready for Dec 1"}</div></div></div><div class="dots30">${dots}</div></div>`;
@@ -2599,7 +2602,7 @@ function renderDash(){
   <div class="acts" style="margin-top:10px">${canP?`<button class="mini go" id="dnon">Turn on reminders</button>`:`<button class="mini go" id="dnhow">Show me how</button>`}<button class="mini" id="dnno">Not now</button></div><p class="nmsg" id="dnm"></p></div>`:"";
  D.innerHTML=`<div class="card dc today">${today}</div>${contCard("home")}${ncard}${me}${votdCard()}${fam}${feed}${tiles}`;
  const on=(id,f)=>{const e=$(id);if(e)e.onclick=f};
- on("dgo",()=>{if(n>=30){setView("recap");return}const di=df<0?0:df>=30?next:ci;openReader({mode:"day",i:di,resume:resumeFor(di)})});on("dgl",()=>openSheet(ci));on("homecont",resumePos);on("dvotd",()=>{const r=R9.votd[votdIdx()],p=refParts(r);openReader({mode:"ch",s:p.s,c:p.c,v:r})});
+ on("dgo",()=>{if(n>=30){setView("recap");return}const di=df<0?0:df>=30?next:ci;openReader({mode:"day",i:di,resume:resumeFor(di)})});on("dgl",()=>openSheet(ci));on("dlisten",()=>{if(typeof listenDay==="function")listenDay(df<0?0:ci)});on("homecont",resumePos);on("dvotd",()=>{const r=R9.votd[votdIdx()],p=refParts(r);openReader({mode:"ch",s:p.s,c:p.c,v:r})});
  on("dnon",async()=>{const m=await enablePush().catch(()=>"Couldn't turn on reminders right now.");if(m)$("dnm").textContent=m;else{renderDash();say("Reminders are on! I'll nudge you if you haven't read yet.")}});
  on("dnhow",()=>setView("help"));on("dnno",()=>{st.ntNo=true;save();renderDash()});
  on("dcu",()=>setView("path"));on("dahead",()=>openSheet(next));on("dthought",()=>openThought(ci));on("dfam",()=>setView("fam"));on("dfeed",()=>setView("feed"));on("dsign",()=>openAccount());
@@ -2798,7 +2801,7 @@ document.documentElement.classList.toggle("duo",duoOn());
 ["gesturestart","gesturechange"].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
 document.addEventListener("touchmove",e=>{if(e.touches&&e.touches.length>1)e.preventDefault()},{passive:false});
 /* ---------- stay up to date ---------- */
-const BUILD="1795892178";
+const BUILD="1795892483";
 async function checkUpdate(){if(location.protocol!=="https:"||BUILD.startsWith("__"))return;try{const r=await fetch("version.json?t="+Date.now(),{cache:"no-store"});if(!r.ok)return;const v=(await r.json()).v;
  if(v&&v!==BUILD){let tried="";try{tried=sessionStorage.getItem("nt30-upd")||""}catch(e){}if(tried===v)return;try{sessionStorage.setItem("nt30-upd",v)}catch(e){}save();setTimeout(()=>location.reload(),400)}}catch(e){}}
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")checkUpdate()});setTimeout(checkUpdate,1500);
@@ -3452,7 +3455,7 @@ function audEl(){if(AU.el)return AU.el;const e=AU.el=new Audio();e.preload="auto
 function audQueue(startCh){const L=RD.mode==="day"?RD.list.slice():[[RD.s,RD.c]];const i=Math.max(0,L.findIndex(([s,c])=>chKey(s,c)===startCh));return {q:L,i}}
 function audStart(fromRef){if(!RD)return;clearSel();try{speechSynthesis.cancel()}catch(e){}
  const r=fromRef||firstVisible()||(RD.list[0]&&`${RD.list[0][0]}.${RD.list[0][1]}.1`);const p=refParts(r);
- if(!audSeg(p.s,p.c)){listenFrom(fromRef);return}
+ if(st.rs.voice==="tts"||!audSeg(p.s,p.c)){listenFrom(fromRef);return}
  const {q,i}=audQueue(chKey(p.s,p.c));AU.on=true;AU.q=q;AU.i=i;RDR.classList.add("listening");audPlay(p.v>1?r:null)}
 function audFromVerse(r){const p=refParts(r),k=chKey(p.s,p.c),i=AU.q.findIndex(([s,c])=>chKey(s,c)===k);if(i<0){audStop();audStart(r);return}AU.i=i;audPlay(r)}
 function verseFrac(r){const p=refParts(r),ch=document.querySelector(`.rch[data-k="${p.s}.${p.c}"]`);if(!ch)return 0;let before=0,all=0;ch.querySelectorAll(".v").forEach(v=>{const n=(v.textContent||"").split(/\s+/).length;if(+v.dataset.r.split(".")[2]<p.v)before+=n;all+=n});return all?before/all:0}
@@ -3465,7 +3468,7 @@ function audPlay(fromRef){const [s,c]=AU.q[AU.i]||[];if(!s){audStop();toast("Fin
  clearTimeout(AU.t);AU.t=setTimeout(()=>{if(AU.on&&AU.loading&&e.paused)audFail()},20000);
  audFollow(s,c);audSession();paintAud()}
 function audFollow(s,c){const el=document.querySelector(`.rch[data-k="${s}.${c}"]`);if(!el)return;if(PM()){const pg=pageOf(el);if(pg!==PG.i)goPage(pg,true)}else{const r=el.getBoundingClientRect();if(r.top>innerHeight*.6||r.bottom<80)el.scrollIntoView({block:"start",behavior:reduceMo()?"auto":"smooth"})}}
-function audTick(){if(!AU.on||!AU.cur)return;const e=AU.el,{s,c,seg}=AU.cur;if(seg[1]===seg[2]||c===seg[2])return;
+function audTick(){if(!AU.on||!AU.cur)return;const e=AU.el,{s,c,seg}=AU.cur;if(AU.loading&&!e.paused&&e.readyState>=3){AU.loading=false;clearTimeout(AU.t);paintAud()}audBar();audPreload();if(seg[1]===seg[2]||c===seg[2])return;
  const [,b]=audSpan(s,c,seg,e.duration||seg[3]);if(e.currentTime<b)return;
  markCh(chKey(s,c));const nx=AU.q[AU.i+1];if(nx&&nx[0]===s&&nx[1]===c+1){AU.i++;AU.cur={s,c:c+1,seg};audFollow(s,c+1);audSession();paintAud()}else{AU.i++;audPlay()}}
 function audEnded(){if(!AU.on||!AU.cur)return;const {s,c}=AU.cur;markCh(chKey(s,c));AU.i++;
@@ -3473,6 +3476,10 @@ function audEnded(){if(!AU.on||!AU.cur)return;const {s,c}=AU.cur;markCh(chKey(s,
  if(RD&&RD.mode==="ch"){const ix=BKS.indexOf(s),b=BK[s];const nx=c<b.c?[s,c+1]:ix<BKS.length-1?[BKS[ix+1],1]:null;
   if(nx){Promise.resolve(openReader({mode:"ch",s:nx[0],c:nx[1],keepAudio:true})).then(()=>{if(!AU.on)return;AU.q=[nx];AU.i=0;audPlay()});return}}
  audStop();toast("Finished listening")}
+function listenDay(di){const r=resumeFor(di),f=dayCh(di)[0];let s=f[0],c=f[1];if(r){const p=refParts(r);s=p.s;c=p.c}
+ if(st.rs.voice!=="tts"&&audSeg(s,c)){const e=audEl(),sg=audSeg(s,c);if(e.src!==sg[0])e.src=sg[0];const pr=e.play();if(pr&&pr.catch)pr.catch(()=>{})}
+ else{try{speechSynthesis.speak(new SpeechSynthesisUtterance(" "))}catch(e){}}
+ Promise.resolve(openReader({mode:"day",i:di,resume:r})).then(()=>setTimeout(()=>{if(RD&&!RDR.hidden&&!AU.on&&!LSN.on)audStart(null)},450))}
 function audFail(){if(!AU.on)return;toast("Couldn't load the recording. Switching to the built-in voice.");audToVoice()}
 function audToVoice(){const cur=AU.q[AU.i];audStop();if(cur)listenFrom(`${cur[0]}.${cur[1]}.1`)}
 function audStop(){if(!AU.on)return;AU.on=false;clearTimeout(AU.t);if(AU.el){try{AU.el.pause()}catch(e){}}RDR.classList.remove("listening");if(!LSN.on)$("rplay").classList.remove("show");try{if("mediaSession" in navigator)navigator.mediaSession.playbackState="none"}catch(e){}}
@@ -3481,9 +3488,13 @@ function audSession(){if(!("mediaSession" in navigator)||!AU.cur)return;const {s
  const ms=navigator.mediaSession,e=AU.el;ms.setActionHandler("play",()=>e.play());ms.setActionHandler("pause",()=>e.pause());
  ms.setActionHandler("nexttrack",()=>{if(AU.i<AU.q.length-1){AU.i++;audPlay()}});ms.setActionHandler("previoustrack",()=>{if(AU.i>0){AU.i--;audPlay()}else audPlay()});
  ms.setActionHandler("seekbackward",d=>{e.currentTime=Math.max(0,e.currentTime-((d&&d.seekOffset)||15))});ms.setActionHandler("seekforward",d=>{e.currentTime=Math.min(e.duration||1e9,e.currentTime+((d&&d.seekOffset)||15))})}catch(err){}}
+function audBar(){const b=document.querySelector("#rplay .rpbar b");if(!b||!AU.cur)return;const e=AU.el,{s,c,seg}=AU.cur;const [a,z]=audSpan(s,c,seg,e.duration||seg[3]);b.style.width=Math.max(0,Math.min(100,(e.currentTime-a)/Math.max(1,z-a)*100))+"%"}
+function audPreload(){const e=AU.el,nx=AU.q[AU.i+1];if(!nx||!AU.cur||!isFinite(e.duration)||e.duration-e.currentTime>45)return;const sg=audSeg(nx[0],nx[1]);if(!sg||sg[0]===AU.cur.seg[0]||AU.pre===sg[0])return;AU.pre=sg[0];try{const x=new Audio();x.preload="auto";x.muted=true;x.src=sg[0];AU.preEl=x}catch(err){}}
 function paintAud(){const p=$("rplay");if(!AU.on){if(!LSN.on)p.classList.remove("show");return}const e=AU.el,cur=AU.cur;const paused=!e||e.paused;
- p.innerHTML=`<span class="rpi">${I9.ear}</span><span class="rpt"><small>${AU.loading&&!paused?"Loading…":cur?"Read by "+esc(cur.seg[4]):"Listening"}</small><b>${cur?esc(chName(cur.s,cur.c)):""}</b></span><button class="rpbtn" id="rpsp" aria-label="Speed">${AU.rate===1?"1x":AU.rate+"x"}</button><button class="rpbtn" id="rppp" aria-label="${paused?"Play":"Pause"}">${paused?I9.play:I9.pause}</button><button class="rpbtn" id="rpst" aria-label="Stop">${I9.stop}</button>`;
- p.classList.add("show");
+ p.innerHTML=`<span class="rpi">${I9.ear}</span><span class="rpt"><small>${AU.loading&&!paused?"Loading…":cur?"Read by "+esc(cur.seg[4]):"Listening"}</small><b>${cur?esc(chName(cur.s,cur.c)):""}</b></span><button class="rpbtn" id="rpsp" aria-label="Speed">${AU.rate===1?"1x":AU.rate+"x"}</button><button class="rpbtn rpb15" id="rpbk" aria-label="Back 15 seconds"><svg viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 107.5-7.5H8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M10 1.8L7.2 4.5 10 7.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><text x="12" y="15.6" text-anchor="middle" font-size="7.5" font-weight="800" font-family="sans-serif" fill="currentColor">15</text></svg></button><button class="rpbtn" id="rppp" aria-label="${paused?"Play":"Pause"}">${paused?I9.play:I9.pause}</button><button class="rpbtn" id="rpst" aria-label="Stop">${I9.stop}</button><span class="rpbar" id="rpbar" aria-label="Seek"><i><b></b></i></span>`;
+ p.classList.add("show");audBar();
+ $("rpbk").onclick=()=>{if(e)e.currentTime=Math.max(0,e.currentTime-15)};
+ $("rpbar").onclick=ev=>{if(!e||!AU.cur)return;const r=$("rpbar").querySelector("i").getBoundingClientRect();const f=Math.max(0,Math.min(1,(ev.clientX-r.left)/r.width));const {s,c,seg}=AU.cur;const [a,z]=audSpan(s,c,seg,e.duration||seg[3]);e.currentTime=a+(z-a)*f};
  $("rppp").onclick=()=>{if(!e)return;if(e.paused){const pr=e.play();if(pr&&pr.catch)pr.catch(()=>{})}else e.pause()};
  $("rpst").onclick=stopListen;$("rpsp").onclick=()=>{const rs=[1,1.25,1.5,.85];AU.rate=rs[(rs.indexOf(AU.rate)+1)%rs.length];if(e)e.playbackRate=AU.rate;paintAud()};
  try{if("mediaSession" in navigator)navigator.mediaSession.playbackState=paused?"paused":"playing"}catch(err){}}
@@ -3491,7 +3502,7 @@ document.addEventListener("visibilitychange",()=>{if(document.hidden&&RD&&!RDR.h
 
 /* ---- reader text settings ---- */
 $("raa").onclick=openRS;
-function openRS(){park();const s=$("sheet");s.style.removeProperty("--c");s.style.removeProperty("--d");const r=st.rs,FS=[15,16,17,19,21,23,26];
+function openRS(){park();const s=$("sheet");s.style.removeProperty("--c");s.style.removeProperty("--d");if(!st.rs.voice)st.rs.voice="rec";const r=st.rs,FS=[15,16,17,19,21,23,26];
  const seg=(k,opts)=>`<div class="rseg" data-k="${k}">${opts.map(([v,l,x])=>`<button data-v="${v}" aria-pressed="${String(r[k])===String(v)}"${x?` style="${x}"`:""}>${l}</button>`).join("")}</div>`;
  s.innerHTML=`<div class="grab"></div><h2 id="shT">Reading view</h2>
   <p class="sec">Text size</p><div class="rfs"><button id="fsd" aria-label="Smaller text">A</button><div class="rfsb">${FS.map(f=>`<i class="${f<=r.fs?"on":""}"></i>`).join("")}</div><button id="fsu" aria-label="Bigger text">A</button></div>
@@ -3500,6 +3511,7 @@ function openRS(){park();const s=$("sheet");s.style.removeProperty("--c");s.styl
   <p class="sec">Line spacing</p>${seg("lh",[["tight","Compact"],["normal","Normal"],["loose","Roomy"]])}
   <p class="sec">Turning pages</p>${seg("pm",[["scroll","Scroll"],["pages","Pages"]])}${bookMode()?`<p class="nmsg">Book view is on because the Duo layout is on and the phone is open.</p>`:""}
   <p class="sec">Layout</p>${seg("vl",[["true","Each verse"],["false","Paragraphs"]])}
+  <p class="sec">Listening</p>${seg("voice",[["rec","Recorded reader"],["tts","Built-in voice"]])}<p class="nmsg">Recorded readings are real people from LibriVox. The built-in voice works offline.</p>
   <p class="sec">Extras</p>${tgl("rsred",r.red,"Words of Jesus in red","Show the Savior's words in red text")}${tgl("rscomm",r.comm,"Show community highlights","A faint underline on verses others have highlighted")}
   <button class="btn" id="rsdone" style="margin-top:18px">Done</button>`;
  const up=()=>{st.rsu=Date.now();applyRS();save9()};
